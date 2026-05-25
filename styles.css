@@ -1,0 +1,73 @@
+.navbar{
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.navbar a{
+    font-family: "Nunito";
+    margin: 0 100px;
+    text-decoration: none;
+    font-size: 30px;
+    color: #753347;
+}
+
+h1 {
+    font-family: "Fruktur", system-ui;
+    font-size: 200px;
+    font-weight: 400;
+    margin-top: 0px;
+    font-style: normal;
+    text-align: center;
+}
+body {
+    font-family:"Nunito";
+    background-color: #fef0e2;
+    color: #671830;
+    padding: 50px;
+    font-size: 24px;
+}
+button {
+    border-radius: 10px; 
+    border: 2px solid #671830;
+    color:#671830;
+    transition: .2s linear;
+    background: #fef0e2;
+
+    padding: 10px 15px;
+
+    font-family: 'Nunito';
+    font-size: 20px;
+}
+button:hover {
+    box-shadow: 0 0 0 2px #fef0e2, 0 0 0 4px#671830;
+}
+
+/*============
+СИМУЛЯТОРИМ
+=============*/
+h2 {
+    font-family: "Fruktur", system-ui;
+    font-size: 100px;
+    font-weight: 100;
+    font-style: normal;
+}
+
+#text-container{
+    font-size: 20px;
+    line-height: 1.8;
+    margin-bottom: 20px;
+}
+
+#losgeht_btn{
+    border-radius: 10px; 
+    border: 2px solid #fef0e2;
+    color:#fef0e2;
+    transition: .2s linear;
+    background: #671830;
+
+    padding: 18px 45px;
+
+    font-family: 'Nunito';
+    font-size: 64px;
+    margin: right;
+}
