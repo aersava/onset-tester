@@ -20,6 +20,8 @@ h1 {
     text-align: center;
 }
 body {
+    user-select: none;
+
     font-family:"Nunito";
     background-color: #fef0e2;
     color: #671830;
@@ -51,6 +53,16 @@ h2 {
     font-weight: 100;
     font-style: normal;
 }
+#timer_box {
+    font-family: 'Nunito';
+    font-size: 20px;
+    color:#671830;
+    display: none;
+}
+#timer_box.visible {
+    display: block;
+    color: #c60b0b;
+}
 
 #text-container{
     font-size: 20px;
@@ -70,4 +82,44 @@ h2 {
     font-family: 'Nunito';
     font-size: 64px;
     margin: right;
+}
+
+@media (max-width: 768px) {
+body {
+        padding: 15px;     
+        font-size: 18px;    
+    }
+
+    .navbar a {
+        margin: 0 15px;      
+        font-size: 20px;    
+    }
+
+    h1 {
+        font-size: 60px;     
+        margin-top: 20px;
+    }
+
+    h2 {
+        font-size: 40px;     
+    }
+
+    #losgeht_btn {
+        font-size: 32px;     
+        padding: 12px 30px;
+        width: 100%;        
+    }
+
+    .about-container {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .test-input {
+        font-size: 18px !important; 
+        padding: 2px !important;
+        height: 28px !important;
+    }
+}    
 }
