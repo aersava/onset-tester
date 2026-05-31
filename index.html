@@ -22,8 +22,11 @@
         <div id="homepage">
             
             <h1>Lückentest</h1>
-
-            <button id="losgeht_btn">Los gehts</button>
+            <div class="welcome-container">
+                <img src="css/kot2.png" alt="Кот" class="welcome-cat">
+    
+                <button id="losgeht_btn">Los gehts</button>
+            </div>
 
             <section class="about-uns">
                 <h2>was ist das, man?</h2>
@@ -32,21 +35,18 @@
                         распределительному тесту по немецкому языку. Понимаю, что очень 
                         нервно готовиться и душит страх попадания в партнеры за охренительно большие деньги, 
                         поэтому такая задумка и родилась на свет.</div>
-                    
-                    <div class="charakter">
-                        <span>hier werde eine Person</span>
-                    </div>
                 </div>
             </section>
         </div>
 
-        <div id="auth-section" style="display: none; background: #671830; color: #fef0e2; padding: 15px; text-align: center; font-size: 18px;">
-            <span>Введи свой индивидуальный ключ для доступа ко всем тренажерам: </span>
-            <input type="text" id="access-key-input" style="padding: 5px; font-size: 16px; border-radius: 5px; border: none; margin: 0 10px;">
-            <button id="login-submit-btn" style="background: #fef0e2; color: #671830; padding: 5px 15px; font-size: 16px;">Войти</button>
-    </div>
+        
 
         <div id="simulations" style="display: none;">
+            <div id="auth-section" style="display: none; background: #671830; color: #fef0e2; padding: 15px; text-align: center; font-size: 18px;">
+                <span>Введи свой индивидуальный ключ для доступа ко всем тренажерам: </span>
+                <input type="text" id="access-key-input" style="padding: 5px; font-size: 16px; border-radius: 5px; border: none; margin: 0 10px;">
+                <button id="login-submit-btn" style="background: #fef0e2; color: #671830; padding: 5px 15px; font-size: 16px;">Войти</button>
+            </div>
 
             <h2>onSet Simulation</h2>
             <div id="timer_box"> 05:00</div>

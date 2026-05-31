@@ -16,9 +16,30 @@ h1 {
     font-size: 200px;
     font-weight: 400;
     margin-top: 0px;
+    margin-bottom: 5px;
     font-style: normal;
     text-align: center;
 }
+.welcome-container {
+    display: flex;
+    justify-content: space-between; 
+    align-items: flex-end;     
+    width: 100%;
+    max-width: 1000px;            
+    margin: 10px auto 10px auto;    
+    padding: 0 10px;
+    box-sizing: border-box;
+}
+
+
+.welcome-cat {
+    display: block;
+    height: auto;    
+    width: 500px;
+    object-fit: contain;
+}
+
+
 body {
     user-select: none;
 
@@ -42,6 +63,26 @@ button {
 }
 button:hover {
     box-shadow: 0 0 0 2px #fef0e2, 0 0 0 4px#671830;
+}
+
+
+#losgeht_btn {
+    font-family: 'Nunito', sans-serif;
+    font-size: 50px;
+    padding: 20px 60px;
+    border-radius: 10px;
+
+    border: 2px solid #671830;
+    color: #fef0e2;
+    background: #671830;
+
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin: 0;               
+}
+#losgeht_btn:hover {
+    background: #671830;
+    color: #fef0e2;
 }
 
 /*============
@@ -70,20 +111,6 @@ h2 {
     margin-bottom: 20px;
 }
 
-#losgeht_btn{
-    border-radius: 10px; 
-    border: 2px solid #fef0e2;
-    color:#fef0e2;
-    transition: .2s linear;
-    background: #671830;
-
-    padding: 18px 45px;
-
-    font-family: 'Nunito';
-    font-size: 64px;
-    margin: right;
-}
-
 @media (max-width: 768px) {
 body {
         padding: 15px;     
@@ -105,8 +132,8 @@ body {
     }
 
     #losgeht_btn {
-        font-size: 32px;     
-        padding: 12px 30px;
+        font-size: 26px;
+        padding: 12px 25px;
         width: 100%;        
     }
 
@@ -121,5 +148,14 @@ body {
         padding: 2px !important;
         height: 28px !important;
     }
+    .welcome-container {
+        flex-direction: column;
+        align-items: center;
+        gap: 25px;
+        margin: 30px auto;
+    }
+    .welcome-cat {
+        width: 280px;
+        height: auto;
+    }
 }    
-}
