@@ -123,6 +123,13 @@ h2 {
     white-space: pre-line;
 }
 
+.about-text a{
+        color: #671830;
+        text-decoration: underline dotted;
+        font-weight: bold;
+        transition: color 0.2s ease;
+}
+
 .instructions-container {
     display: flex;
 }
@@ -197,6 +204,12 @@ h2 {
         display: flex;
         flex-direction: column;
         gap: 20px;
+    }
+    .about-text a{
+        color: #671830;
+        text-decoration: underline dotted;
+        font-weight: bold;
+        transition: color 0.2s ease;
     }
 
     .test-input {
