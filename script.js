@@ -1,279 +1,391 @@
-// ИНИЦИАЛИЗАЦИЯ SUPABASE
-const SUPABASE_URL = "https://mxscxbnfoflmyommmvkw.supabase.co";
-const SUPABASE_ANON_KEY = "sb_publishable_UywRzzKorhm2e27LVhB1yg_tguBQc21"; 
-const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+(async () => {
+    // ИНИЦИАЛИЗАЦИЯ SUPABASE
+    const SUPABASE_URL = "https://mxscxbnfoflmyommmvkw.supabase.co";
+    const SUPABASE_ANON_KEY = "sb_publishable_UywRzzKorhm2e27LVhB1yg_tguBQc21";
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-// DOM ЭЛЕМЕНТЫ СТРАНИЦЫ 
-const homePage = document.getElementById("homepage");
-const simulationPage = document.getElementById("simulations");
-const textContainer = document.getElementById("text-container");
+    // DOM ЭЛЕМЕНТЫ СТРАНИЦЫ
+    const homePage = document.getElementById("homepage");
+    const simulationPage = document.getElementById("simulations");
+    const textContainer = document.getElementById("text-container");
 
-const startBtn = document.getElementById("losgeht_btn");
-const navSimBtn = document.getElementById("nav-simulations");
-const homeBtn = document.getElementById("toHome");
-const nextBtn = document.getElementById("check-btn");
+    const startBtn = document.getElementById("losgeht_btn");
+    const navSimBtn = document.getElementById("nav-simulations");
+    const homeBtn = document.getElementById("toHome");
+    const nextBtn = document.getElementById("check-btn");
 
-const timer = document.getElementById("timer_box");
+    const timer = document.getElementById("timer_box");
 
-const authSection = document.getElementById("auth-section");
-const login = document.getElementById("login-submit-btn");
-const keyInput = document.getElementById("access-key-input");
+    const authSection = document.getElementById("auth-section");
+    const login = document.getElementById("login-submit-btn");
+    const keyInput = document.getElementById("access-key-input");
 
+    const instructionsPage = document.getElementById("instructions-page");
+    const realStartBtn = document.getElementById("start-simulation-btn");
 
-let countdownInterval;
-let articles = [];
-let simulatorTexts = [];
-let currentTextIndex = 0;
+    let countdownInterval;
+    let articles = [];
+    let simulatorTexts = [];
+    let lastActiveInput = null;
+    const usedTextIds = [];
+    let totalScore = 0;
+    let totalGaps = 0;
+    let completedTexts = 0;
 
-// Kein Copy)
-document.addEventListener('contextmenu', function(element){
-    element.preventDefault();
-});
-document.addEventListener('keydown', function(element) {
-    if (element.ctrlKey && (element.key === 'c' || element.key === 'с' || element.key === 'x' || element.key === 'ч')) {
-        element.preventDefault();
+    document.addEventListener("focusin", (e) => {
+        if (e.target.classList.contains("test-input")) {
+            lastActiveInput = e.target;
+        }
+    });
+
+    function enterGermanKey(e) {
+        if (!e.target.classList.contains("key")) {
+            return;
+        }
+        e.preventDefault();
+        if (!lastActiveInput) {
+            return;
+        }
+        const c = e.target.getAttribute("data-char");
+        const start = lastActiveInput.selectionStart;
+        const end = lastActiveInput.selectionEnd;
+        const text = lastActiveInput.value;
+        lastActiveInput.value = text.substring(0, start) + c + text.substring(end);
+        lastActiveInput.selectionStart = start + 1;
+        lastActiveInput.selectionEnd = start + 1;
+        lastActiveInput.focus();
     }
-    if (element.ctrlKey && (element.key === 'u' || element.key === 'г' )) {
+    document.getElementById("german-keys").addEventListener("mousedown", enterGermanKey);
+    document.getElementById("german-keys").addEventListener("touchstart", enterGermanKey);
+
+    // Kein Copy)
+    document.addEventListener("contextmenu", (element) => {
         element.preventDefault();
+    });
+    document.addEventListener("keydown", (element) => {
+        if (
+            element.ctrlKey &&
+            (element.key === "c" || element.key === "с" || element.key === "x" || element.key === "ч")
+        ) {
+            element.preventDefault();
+        }
+        if (element.ctrlKey && (element.key === "u" || element.key === "г")) {
+            element.preventDefault();
+        }
+        if (element === "F12") {
+            element.preventDefault();
+        }
+    });
+
+    //ТАЙМЕР
+    function startTimer(durationInSek) {
+        let timeLeft = durationInSek;
+
+        timer.classList.remove("visible");
+        timer.innerText = "05:00";
+
+        clearInterval(countdownInterval);
+
+        countdownInterval = setInterval(() => {
+            let minutes = Math.floor(timeLeft / 60); // минуты
+            let seconds = timeLeft % 60; // секунды
+
+            seconds = seconds < 10 ? "0" + seconds : seconds;
+            minutes = minutes < 10 ? "0" + minutes : minutes;
+
+            timer.innerText = `${minutes}:${seconds}`;
+
+            if (timeLeft <= 60) {
+                timer.classList.add("visible");
+            }
+
+            if (timeLeft <= 0) {
+                clearInterval(countdownInterval);
+                timer.classList.remove("visible");
+                handleNextButtonClick();
+            }
+            timeLeft--;
+        }, 1000);
     }
-    if (element === 'F12') {
-        element.preventDefault();
+
+    function showSimulation() {
+        homePage.style.display = "none";
+        simulationPage.style.display = "none";
+        instructionsPage.style.display = "block";
     }
-});
-
-//ТАЙМЕР 
-function startTimer (durationInSek) {
-    let timeLeft = durationInSek;
-
-    timer.classList.remove("visible");
-    timer.innerText = "05:00"; 
-
-    clearInterval(countdownInterval);
-
-    countdownInterval = setInterval(() => {
-        let minutes = Math.floor(timeLeft / 60); // минуты
-        let seconds = timeLeft % 60;            // секунды
-
-        seconds = seconds < 10 ? "0" + seconds : seconds;
-        minutes = minutes < 10 ? "0" + minutes : minutes;
-
-        timer.innerText = `${minutes}:${seconds}`; 
-
-        if (timeLeft <= 30) {
-            timer.classList.add("visible");
+    function beginSimulation() {
+        instructionsPage.style.display = "none";
+        simulationPage.style.display = "block";
+        if (simulatorTexts.length === 0) {
+            textContainer.innerHTML = "Тексты загружаются из базы данных или список пуст сори...";
+            return;
         }
 
-        if (timeLeft <= 0) {
-            clearInterval(countdownInterval);
-            timer.classList.remove("visible");
-            alert("Zeit ist um!");
-        }
-        timeLeft--;
-    }, 1000);
-}
-
-function showSimulation() {
-    homePage.style.display = "none";
-    simulationPage.style.display = "block";
-
-    // Защита: если база пуста или еще грузится
-    if (simulatorTexts.length === 0) {
-        textContainer.innerHTML = "Тексты загружаются из базы данных или список пуст сори...";
-        return;
+        loadNextText();
     }
 
-    const savedKey = localStorage.getItem('user_access_key');
-    
-    // Ограничение Freemium: если ключа нет и бесплатные 10 текстов закончились
-    if (!savedKey && currentTextIndex >= simulatorTexts.length) {
-        textContainer.innerHTML = `
-            <div style="text-align: center; padding: 20px; background: #671830; color: #fef0e2; border-radius: 10px; margin-top: 20px;">
-                <h3>🎉 Вы прошли все бесплатные симуляции!</h3>
-                <p>Остальные тексты доступны в Premium-версии.</p>
-                <p>Чтобы получить индивидуальный пароль доступа, напиши мне в Telegram.</p>
-            </div>
-        `;
-        if (nextBtn) nextBtn.style.display = "none";
+    function showHomepage() {
         clearInterval(countdownInterval);
         timer.classList.remove("visible");
-        return;
+
+        simulationPage.style.display = "none";
+        homePage.style.display = "block";
+        instructionsPage.style.display = "none";
     }
 
-    if (nextBtn) nextBtn.style.display = "inline-block";
+    startBtn.addEventListener("click", showSimulation);
+    navSimBtn.addEventListener("click", showSimulation);
+    homeBtn.addEventListener("click", showHomepage);
+    realStartBtn.addEventListener("click", beginSimulation);
 
-    // Берем текст из массива Supabase
-    const currentTextData = simulatorTexts[currentTextIndex % simulatorTexts.length];    
-    
-    const cTestSim = onsetText(currentTextData.content);
-    textContainer.innerHTML = `<h3>Текст №${currentTextData.id}: ${currentTextData.title || 'тут могло быть название...'}</h3>` + cTestSim;
+    // ГЕНЕРАТОР ONSET
+    function onsetText(textToProcess) {
+        const text_sentences = textToProcess.split(". ");
+        const count_sentences = text_sentences.length;
 
-    startTimer(300); // 5 минут на тест
-}
+        let finalHTML = "";
 
-function loadNextTxt() {
-    currentTextIndex++; 
-    showSimulation(); 
-}
+        for (let i = 0; i < count_sentences; i++) {
+            let current_sentence = text_sentences[i].trim();
+            if (!current_sentence) continue;
 
-if (nextBtn) nextBtn.addEventListener("click", loadNextTxt);
+            if (current_sentence.endsWith(".")) {
+                current_sentence = current_sentence.slice(0, -1);
+            }
 
-function showHomepage() {
-    clearInterval(countdownInterval);
-    timer.classList.remove("visible");
+            if (i === 0 || i === count_sentences - 1) {
+                finalHTML += current_sentence + ". ";
+            } else {
+                const words = current_sentence.split(/\s+/);
 
-    simulationPage.style.display = "none";
-    homePage.style.display = "block";
-}
+                const process_word = words.map((word, wordIndex) => {
+                    const cleanWord = word.replace(/[.,/#!$%^&*;:{}=\-_`~()]/g, "");
 
-startBtn.addEventListener("click", showSimulation);
-navSimBtn.addEventListener("click", showSimulation);
-homeBtn.addEventListener("click", showHomepage);
+                    if (wordIndex % 2 === 1 && cleanWord.length > 1) {
+                        const keepcount = Math.floor(cleanWord.length / 2);
+                        // const missingcount = cleanWord.length - keepcount;
 
-// ГЕНЕРАТОР ONSET
-function onsetText(textToProcess) {
-    const text_sentences = textToProcess.split(". ");
-    const count_sentences = text_sentences.length;
-    
-    let finalHTML = "";
+                        const toKeep = cleanWord.substring(0, keepcount);
+                        const toHide = cleanWord.substring(keepcount);
 
-    for (let i = 0; i < count_sentences; i++){
-        let current_sentence = text_sentences[i].trim();
-        if (!current_sentence) continue;
+                        const prefix = word.substring(0, word.indexOf(cleanWord));
+                        const suffix = word.substring(word.indexOf(cleanWord) + cleanWord.length);
+                        // const toInputWord = Math.max(missingcount * 12, 25);
+                        const maxLength = 20; // думаю ок
+                        const maxWidth = 10;
 
-        if (current_sentence.endsWith('.')) {
-            current_sentence = current_sentence.slice(0, -1);
+                        return `<span class="processed">${prefix}${toKeep}<input type="text" autocorrect="off" autocapitalize="none" spellcheck="false" class="test-input" data-answer="${toHide}" maxlength="${maxLength}" style="width: ${maxWidth}ch;">${suffix}</span>`;
+                    }
+                    return word;
+                });
+
+                finalHTML += process_word.join(" ") + ". ";
+            }
         }
 
-        if (i === 0 || i === count_sentences - 1){
-            finalHTML += current_sentence + ". ";
-        }
-        else {
-            const words = current_sentence.split(" ");
-
-            const process_word = words.map((word, wordIndex) => {
-                const cleanWord = word.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g,"");
-
-                if(wordIndex % 2 === 1 && cleanWord.length > 1) {
-                    const keepcount = Math.floor(cleanWord.length / 2);
-                    const missingcount = cleanWord.length - keepcount;
-
-                    const toKeep = cleanWord.substring(0, keepcount);
-                    const toHide = cleanWord.substring(keepcount);
-
-                    const toInputWord = Math.max((missingcount * 12), 25);
-                    const punctuation = word.slice(cleanWord.length);
-
-                    return `${toKeep}<input type="text" class="test-input" data-answer="${toHide}" maxlength="${missingcount}" style="width: ${toInputWord}px;">${punctuation}`;
-                }
-                return word;
-            });
-
-            finalHTML += process_word.join(" ") + ". ";
-        }
+        return finalHTML.trim();
     }
 
-    return finalHTML.trim();
-}
- 
-async function checkCurrentAccess() {
-    const savedKey = localStorage.getItem('user_access_key');
-    if (savedKey) {
-        const hasAccess = await verifyKeyInDatabase(savedKey);
-        if (hasAccess) {
-            hideAuthForm();
+    async function checkCurrentAccess() {
+        const savedKey = localStorage.getItem("user_access_key");
+        if (savedKey) {
+            const hasAccess = await verifyKeyInDatabase(savedKey);
+            if (hasAccess) {
+                hideAuthForm();
+                return true;
+            }
+        }
+        showAuthForm();
+        return false;
+    }
+
+    async function verifyKeyInDatabase(key) {
+        if (!key || key === "null" || key === undefined) {
+            return false;
+        }
+        try {
+            const { data, error } = await supabaseClient
+                .from("access_keys")
+                .select("*")
+                .eq("key_value", key)
+                .eq("is_active", true)
+                .single();
+
+            if (error || !data) return false;
             return true;
+        } catch (err) {
+            return false;
         }
     }
-    showAuthForm();
-    return false;
-}
 
-async function verifyKeyInDatabase(key) {
-    if (!key || key === 'null' || key === undefined) {
-        return false;
-    }
-    try {
-        const { data, error } = await supabaseClient
-            .from('access_keys')
-            .select('*')
-            .eq('key_value', key)
-            .eq('is_active', true)
-            .single();
-
-        if (error || !data) return false;
-        return true;
-    } catch (err) {
-        return false;
-    }
-}
-
-async function handleLogin() {
-    const enteredKey = keyInput.value.trim();
-    if (!enteredKey) return alert("Введите ключ!");
-
-    const isValid = await verifyKeyInDatabase(enteredKey);
-
-    if (isValid) {
-        localStorage.setItem('user_access_key', enteredKey);
-        alert('Доступ открыт 🎉');
-        hideAuthForm();
-        await loadAllContent(); 
-    } else {
-        alert('Ключ не найден или неактивен. Напиши мне в ТГ!');
-    }
-}
-
-function showAuthForm() {
-    if (authSection) authSection.style.display = "block";
-}
-
-function hideAuthForm() {
-    if (authSection) authSection.style.display = "none";
-}
-
-//ЗАГРУЗКА ИЗ БАЗЫ ДАННЫХ
-async function loadAllContent() {
-    const savedKey = localStorage.getItem('user_access_key');
-    const hasAccess = await verifyKeyInDatabase(savedKey);
-
-    try {
-        // 1. Загрузка статей
-        let articlesQuery = supabaseClient.from('articles').select('*');
-        if (!hasAccess) {
-            articlesQuery = articlesQuery.eq('is_free', true); 
-        }
-        
-        const { data: fetchedArticles, error: artError } = await articlesQuery;
-        if (!artError) {
-            articles = fetchedArticles;
-            renderArticles();
+    async function handleLogin() {
+        const enteredKey = keyInput.value.trim();
+        if (!enteredKey) {
+            return alert("Введите ключ!");
         }
 
-        let textsQuery = supabaseClient.from('simulator_texts').select('*');
-        if (!hasAccess) {
-            textsQuery = textsQuery.eq('is_free', true); 
-        }
-        
-        textsQuery = textsQuery.order('category', {ascending: true});
-        const { data: fetchedTexts, error: textError } = await textsQuery;
-        if (!textError) {
-            simulatorTexts = fetchedTexts;
-            console.log(`Успешно загружено текстов: ${simulatorTexts.length}`);
-        }
+        const isValid = await verifyKeyInDatabase(enteredKey);
 
-    } catch (error) {
-        console.error("сломався:", error);
+        if (isValid) {
+            localStorage.setItem("user_access_key", enteredKey);
+            alert("Доступ открыт 🎉");
+            hideAuthForm();
+            await loadAllContent();
+        } else {
+            alert("Ключ не найден или неактивен. Напиши мне в Telegram!");
+        }
     }
-}
 
-function renderArticles() {
-    // Сюда переедет будущая логика самой пиздатой отрисовки лайфхаков на странице
-    console.log("Статьи в массиве:", articles);
-}
+    function showAuthForm() {
+        if (authSection) authSection.style.display = "block";
+    }
 
-if (login) login.addEventListener("click", handleLogin);
+    function hideAuthForm() {
+        if (authSection) authSection.style.display = "none";
+    }
 
-window.addEventListener('DOMContentLoaded', async () => {
-    await checkCurrentAccess();
-    await loadAllContent();
-});
+    //ЗАГРУЗКА ИЗ БАЗЫ ДАННЫХ
+    async function loadAllContent() {
+        const savedKey = localStorage.getItem("user_access_key");
+        const hasAccess = await verifyKeyInDatabase(savedKey);
+
+        try {
+            // 1. Загрузка статей
+            let articlesQuery = supabaseClient.from("articles").select("*");
+            if (!hasAccess) {
+                articlesQuery = articlesQuery.eq("is_free", true);
+            }
+
+            const { data: fetchedArticles, error: artError } = await articlesQuery;
+            if (!artError) {
+                articles = fetchedArticles;
+                renderArticles();
+            }
+
+            let textsQuery = supabaseClient.from("simulator_texts").select("*");
+            if (!hasAccess) {
+                textsQuery = textsQuery.eq("is_free", true);
+            }
+
+            textsQuery = textsQuery.order("category", { ascending: true });
+            const { data: fetchedTexts, error: textError } = await textsQuery;
+            if (!textError) {
+                simulatorTexts = fetchedTexts;
+                console.log(`Успешно загружено текстов: ${simulatorTexts.length}`);
+            }
+        } catch (error) {
+            console.error("сломався:", error);
+        }
+    }
+
+    function loadNextText() {
+        if (completedTexts >= 8) {
+            finalizeResult();
+            return;
+        }
+        const savedKey = localStorage.getItem("user_access_key");
+        const availableTexts = simulatorTexts.filter((t) => savedKey || t.is_free);
+        let newTexts = availableTexts.filter((t) => !usedTextIds.includes(t.id));
+        if (newTexts.length === 0) {
+            usedTextIds = [];
+            newTexts = availableTexts;
+        }
+        if (newTexts.length === 0) {
+            textContainer.innerHTML = "Больше нет текстов";
+            return;
+        }
+
+        const index = Math.floor(Math.random() * newTexts.length);
+        const data = newTexts[index];
+        usedTextIds.push(data.id);
+        const renderedText = onsetText(data.content);
+        textContainer.innerHTML = `<h3>Текст №${data.id}: ${data.title || ""}</h3>` + renderedText;
+        startTimer(300);
+    }
+
+    // I love you too
+    if (location.hostname !== "localhost" && location.hostname !== "127.0.0.1") {
+        setInterval(() => {
+            (() => false).constructor("debugger")();
+        }, 200);
+    }
+    let checked = false;
+    function handleNextButtonClick() {
+        if (checked) {
+            checked = false;
+            nextBtn.innerText = "Weiter";
+            loadNextText();
+            return;
+        }
+        const inputs = textContainer.querySelectorAll(".test-input");
+        let correct = 0;
+        for (const input of inputs) {
+            const userAnswer = input.value.trim().toLowerCase();
+            const correctAnswer = input.getAttribute("data-answer").trim().toLowerCase();
+            if (userAnswer === correctAnswer) {
+                input.style.backgroundColor = "#d4edda";
+                input.style.borderColor = "#28a745";
+                ++correct;
+            } else {
+                input.style.backgroundColor = "#f8d7da";
+                input.style.borderColor = "#dc3545";
+            }
+            input.disabled = true;
+        }
+        totalScore += correct;
+        totalGaps += inputs.length;
+        ++completedTexts;
+        clearInterval(countdownInterval);
+        nextBtn.innerText = "Zum nächsten Text";
+        checked = true;
+    }
+
+    nextBtn?.addEventListener("click", handleNextButtonClick);
+
+    function finalizeResult() {
+        clearInterval(countdownInterval);
+        timer.classList.remove("visible");
+        const percent = totalGaps > 0 ? Math.round((totalScore / totalGaps) * 100) : 0;
+        textContainer.innerHTML = `
+        <div style="text-align: center; padding: 30px; background: #671830; color: #fef0e2; border-radius: 10px; margin-top: 20px;">
+            <h2>Ergebnis / Результат</h2>
+            <p style="font-size: 24px;">Вы успешно завершили 8 текстов!</p>
+            <p style="font-size: 28px; font-weight: bold; margin: 20px 0;">
+                Баллы: ${totalScore} из ${totalGaps} (${percent}%)
+            </p>
+            <button id="restart-session-btn" style="background: #fef0e2; color: #671830; font-size: 22px; padding: 10px 30px; margin-top: 15px;">Еще</button>
+        </div>
+    `;
+
+        if (nextBtn) {
+            nextBtn.style.display = "none";
+        }
+
+        document.getElementById("restart-session-btn").addEventListener("click", () => {
+            // Полный сброс состояния сессии
+            totalScore = 0;
+            totalGaps = 0;
+            completedTexts = 0;
+            usedTextIds.length = 0;
+            checked = false;
+            if (nextBtn) {
+                nextBtn.style.display = "inline-block";
+            }
+            loadNextText();
+        });
+    }
+
+    function renderArticles() {
+        // Сюда переедет будущая логика самой пиздатой отрисовки лайфхаков на странице
+        console.log("Статьи в массиве:", articles);
+    }
+
+    if (login) {
+        login.addEventListener("click", handleLogin);
+    }
+
+    window.addEventListener("DOMContentLoaded", async () => {
+        await checkCurrentAccess();
+        await loadAllContent();
+    });
+})();

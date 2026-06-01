@@ -1,9 +1,21 @@
-.navbar{
+.keys-bar {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin: 20px 0;
+}
+.key {
+    padding: 10px 20px;
+    font-size: 22px;
+    cursor: pointer;
+}
+
+.navbar {
     text-align: center;
     margin-bottom: 40px;
 }
 
-.navbar a{
+.navbar a {
     font-family: "Nunito";
     margin: 0 100px;
     text-decoration: none;
@@ -22,52 +34,51 @@ h1 {
 }
 .welcome-container {
     display: flex;
-    justify-content: space-between; 
-    align-items: flex-end;     
+    justify-content: space-between;
+    align-items: flex-end;
     width: 100%;
-    max-width: 1000px;            
-    margin: 10px auto 10px auto;    
+    max-width: 1000px;
+    margin: 10px auto 10px auto;
     padding: 0 10px;
     box-sizing: border-box;
 }
 
-
 .welcome-cat {
     display: block;
-    height: auto;    
+    height: auto;
     width: 500px;
     object-fit: contain;
 }
 
-
 body {
     user-select: none;
 
-    font-family:"Nunito";
+    font-family: "Nunito";
     background-color: #fef0e2;
     color: #671830;
     padding: 50px;
     font-size: 24px;
 }
 button {
-    border-radius: 10px; 
+    border-radius: 10px;
     border: 2px solid #671830;
-    color:#671830;
-    transition: .2s linear;
+    color: #671830;
+    transition: 0.2s linear;
     background: #fef0e2;
 
     padding: 10px 15px;
 
-    font-family: 'Nunito';
+    font-family: "Nunito";
     font-size: 20px;
 }
 button:hover {
-    box-shadow: 0 0 0 2px #fef0e2, 0 0 0 4px#671830;
+    box-shadow:
+        0 0 0 2px #fef0e2,
+        0 0 0 4px #671830;
 }
 
-
 #losgeht_btn {
-    font-family: 'Nunito', sans-serif;
+    font-family: "Nunito", sans-serif;
     font-size: 50px;
     padding: 20px 60px;
     border-radius: 10px;
@@ -78,7 +89,7 @@ button:hover {
 
     cursor: pointer;
     transition: all 0.2s ease;
-    margin: 0;               
+    margin: 0;
 }
 #losgeht_btn:hover {
     background: #671830;
@@ -95,9 +106,9 @@ h2 {
     font-style: normal;
 }
 #timer_box {
-    font-family: 'Nunito';
+    font-family: "Nunito";
     font-size: 20px;
-    color:#671830;
+    color: #671830;
     display: none;
 }
 #timer_box.visible {
@@ -105,36 +116,81 @@ h2 {
     color: #c60b0b;
 }
 
-#text-container{
+#text-container {
     font-size: 20px;
     line-height: 1.8;
     margin-bottom: 20px;
+    white-space: pre-line;
 }
 
+.instructions-container {
+    display: flex;
+}
+.instruction {
+    padding: 0 2ch;
+}
 @media (max-width: 768px) {
-body {
-        padding: 15px;     
-        font-size: 18px;    
+    .instructions-container {
+        flex-direction: column;
+    }
+    .instruction {
+        box-sizing: border-box;
+        margin-bottom: 30px;
+        max-width: 75%;
+        overflow-wrap: break-word;
+        padding: 0 10px !important;
+        word-break: break-word;
+        word-wrap: break-word;
+    }
+    .instruction:last-child {
+        margin-bottom: 0;
+    }
+    .keys-bar {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        background: #671830;
+        padding: 12px 5px;
+        margin: 0;
+        box-shadow: 0 -8px 10px rgba(0, 0, 0, 0.3);
+        z-index: 9999;
+    }
+    .key {
+        background: #fef0e2 !important;
+        color: #671830 !important;
+        border: none !important;
+        flex: 1;
+        max-width: 70px;
+        text-align: center;
+    }
+    #simulations {
+        padding-bottom: 120px !important;
+    }
+
+    body {
+        padding: 15px;
+        font-size: 18px;
     }
 
     .navbar a {
-        margin: 0 15px;      
-        font-size: 20px;    
+        margin: 0 15px;
+        font-size: 20px;
     }
 
     h1 {
-        font-size: 60px;     
+        font-size: 60px;
         margin-top: 20px;
     }
 
     h2 {
-        font-size: 40px;     
+        font-size: 40px;
     }
 
     #losgeht_btn {
         font-size: 26px;
         padding: 12px 25px;
-        width: 100%;        
+        width: 100%;
     }
 
     .about-container {
@@ -144,7 +200,7 @@ body {
     }
 
     .test-input {
-        font-size: 18px !important; 
+        font-size: 18px !important;
         padding: 2px !important;
         height: 28px !important;
     }
@@ -158,4 +214,4 @@ body {
         width: 280px;
         height: auto;
     }
-}    
+}

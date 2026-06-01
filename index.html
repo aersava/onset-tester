@@ -1,61 +1,105 @@
 <!DOCTYPE html>
-<html lang="rus">
+<html lang="ru">
     <head>
-        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta charset="utf-8">
         <link rel="stylesheet" href="styles.css">
-
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=Fruktur:ital@0;1&family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap" rel="stylesheet">        
+        <link
+            href="https://fonts.googleapis.com/css2?family=Fruktur:ital@0;1&family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap"
+            rel="stylesheet"
+        >
         <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
         <title>ONSET-Test</title>
     </head>
-
-
     <body>
         <nav class="navbar">
-                <a href="#" id="toHome">home</a>
-                <a href="#" style="display: none;">lifehacks</a>
-                <a href="#" id="nav-simulations">simulation</a>
-            </nav>
-
+            <a href="#" id="toHome">home</a>
+            <a href="#" style="display: none;">lifehacks</a>
+            <a href="#" id="nav-simulations">simulation</a>
+        </nav>
         <div id="homepage">
-            
             <h1>Lückentest</h1>
             <div class="welcome-container">
                 <img src="css/kot2.png" alt="Кот" class="welcome-cat">
-    
                 <button id="losgeht_btn">Los gehts</button>
             </div>
-
             <section class="about-uns">
                 <h2>was ist das, man?</h2>
                 <div class="about-container">
-                    <div class="about-text">Привет, это небольшой сайт-тренажер, чтобы подготовиться к 
-                        распределительному тесту по немецкому языку. Понимаю, что очень 
-                        нервно готовиться и душит страх попадания в партнеры за охренительно большие деньги, 
-                        поэтому такая задумка и родилась на свет.</div>
+                    <div class="about-text">
+                        Привет, это небольшой сайт-тренажер, чтобы подготовиться к распределительному тесту по немецкому
+                        языку. Понимаю, что очень нервно готовиться, и душит страх попадания в партнёры за охренительно
+                        большие деньги, поэтому такая задумка и родилась на свет.
+                    </div>
                 </div>
             </section>
         </div>
-
-        
-
-        <div id="simulations" style="display: none;">
-            <div id="auth-section" style="display: none; background: #671830; color: #fef0e2; padding: 15px; text-align: center; font-size: 18px;">
-                <span>Введи свой индивидуальный ключ для доступа ко всем тренажерам: </span>
-                <input type="text" id="access-key-input" style="padding: 5px; font-size: 16px; border-radius: 5px; border: none; margin: 0 10px;">
-                <button id="login-submit-btn" style="background: #fef0e2; color: #671830; padding: 5px 15px; font-size: 16px;">Войти</button>
+        <div id="instructions-page" style="display: none;">
+            <h2>Anleitung</h2>
+            <div class="instructions-container" style="margin-bottom: 20px; font-size: 20px; line-height: 1.6;">
+                <section class="instruction">
+                    <strong>Hinweise zum Test</strong><br><br>
+                    Bitte in Ruhe lesen. Die Zeit läuft noch nicht.<br>
+                    In den folgenden Texten fehlen bei einer Reihe von Wörtern jeweils einige Buchstaben. Ergänzen Sie
+                    bitte die Lücken in sinnvoller Weise. Sie haben für jeden Text maximal 5 Minuten Zeit.<br>
+                    Brauchen Sie Umlaute (ä, ö, ü) und finden Sie diese nicht auf Ihrer Tastatur, klicken Sie einfach
+                    auf den richtigen Umlaut im Fenster unten. Verwenden Sie keine Kombination wie "ae" oder "ue" oder
+                    "oe".<br>
+                    Nach Ablauf von 5 Minuten werden Sie automatisch zum nächsten Text weitergeleitet. Die letzten 60
+                    Sekunden vor der Weiterleitung werden Ihnen angezeigt.<br>
+                    Sollten Sie vor Ablauf der 5 Minuten mit einem Text fertig sein, kommen Sie zum nächsten Text, indem
+                    Sie "Weiter" und dann "Zum nächsten Text" klicken.<br>
+                    Der Test ist beendet, wenn Sie den letzten Text 5 Minuten lang bearbeitet haben oder auf "Test
+                    beenden" klicken.<br><br>
+                    Klicken Sie nun auf "Test starten", um den ersten Text zu bearbeiten.
+                </section>
+                <section class="instruction">
+                    <strong>Примечания к тестированию</strong><br><br>
+                    Пожалуйста, прочтите внимательно и спокойно. Таймер, время ещё не идёт.<br>
+                    В следующих 8 текстах отсутствует одна или несколько букв в некоторых словах. Допишите пропуски по
+                    смыслу. На каждый текст максимум 5 минут (300 секунд).<br>
+                    Используйте немецкую или английскую раскладку клавиатуры. Если нужны немецкие буквы ä ö ü ß, просто
+                    нажмите на нужную клавишу.<br>
+                    По истечении 5 минут вы будете автоматически переключены на следующий текст. Отсчёт последних 60
+                    секунд будет показан на экране.<br>
+                    Если вы закончили заполнение раньше, нажмите на кнопку "Weiter", затем на "Zum nächsten Text".<br>
+                    <br>
+                    Чтобы начать тестирование, нажмите на кнопку "Test starten".
+                </section>
             </div>
-
+            <button id="start-simulation-btn">Test starten</button>
+        </div>
+        <div id="simulations" style="display: none;">
+            <div
+                id="auth-section"
+                style="display: none; background: #671830; color: #fef0e2; padding: 15px; text-align: center; font-size: 18px;"
+            >
+                <span>Введи свой индивидуальный ключ для доступа ко всем тренажёрам: </span>
+                <input
+                    type="text"
+                    id="access-key-input"
+                    style="padding: 5px; font-size: 16px; border-radius: 5px; border: none; margin: 0 10px;"
+                >
+                <button
+                    id="login-submit-btn"
+                    style="background: #fef0e2; color: #671830; padding: 5px 15px; font-size: 16px;"
+                >
+                    Войти
+                </button>
+            </div>
             <h2>onSet Simulation</h2>
-            <div id="timer_box"> 05:00</div>
-
+            <div id="timer_box">05:00</div>
             <div id="text-container"></div>
+            <div id="german-keys" class="keys-bar">
+                <button type="button" class="key" data-char="ä">ä</button>
+                <button type="button" class="key" data-char="ö">ö</button>
+                <button type="button" class="key" data-char="ü">ü</button>
+                <button type="button" class="key" data-char="ß">ß</button>
+            </div>
             <button id="check-btn">Weiter</button>
         </div>
-
         <script src="script.js"></script>
-
     </body>
 </html>
