@@ -204,15 +204,13 @@
             return false;
         }
         try {
-            const { data, error } = await supabaseClient
-                .from("access_keys")
-                .select("*")
-                .eq("key_value", key)
-                .eq("is_active", true)
-                .single();
+            const { data, error } = await supabaseClient.rpc('get_simulator_texts', { 
+                user_key: key
+            });
 
-            if (error || !data) return false;
-            return true;
+            if (error) return false;
+            const hasPremium = data.some(t => !t.is_free);
+            return hasPremium;
         } catch (err) {
             return false;
         }
@@ -246,33 +244,29 @@
 
     //ЗАГРУЗКА ИЗ БАЗЫ ДАННЫХ
     async function loadAllContent() {
-        const savedKey = localStorage.getItem("user_access_key");
-        const hasAccess = await verifyKeyInDatabase(savedKey);
-
+        const savedKey = localStorage.getItem("user_access_key") || "no_key_provided";
+        
         try {
-            // 1. Загрузка статей
+            
             let articlesQuery = supabaseClient.from("articles").select("*");
-            if (!hasAccess) {
-                articlesQuery = articlesQuery.eq("is_free", true);
-            }
-
             const { data: fetchedArticles, error: artError } = await articlesQuery;
             if (!artError) {
                 articles = fetchedArticles;
                 renderArticles();
             }
 
-            let textsQuery = supabaseClient.from("simulator_texts").select("*");
-            if (!hasAccess) {
-                textsQuery = textsQuery.eq("is_free", true);
-            }
 
-            textsQuery = textsQuery.order("category", { ascending: true });
-            const { data: fetchedTexts, error: textError } = await textsQuery;
+            const { data: fetchedTexts, error: textError } = await supabaseClient.rpc('get_simulator_texts', {
+                user_key: savedKey
+            });
+
             if (!textError) {
                 simulatorTexts = fetchedTexts;
                 console.log(`Успешно загружено текстов: ${simulatorTexts.length}`);
+            } else {
+                console.error("Ошибка при получении текстов:", textError);
             }
+
         } catch (error) {
             console.error("сломався:", error);
         }
