@@ -343,6 +343,12 @@ PLUSES SECTION
     outline: none;
 }
 
+.instructions-container {
+    display: flex;
+}
+.instruction {
+    padding: 0 2ch;
+}
 @media (max-width: 768px) {
     .instructions-container {
         flex-direction: column;
