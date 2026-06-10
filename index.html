@@ -4,44 +4,114 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta charset="utf-8">
         <link rel="stylesheet" href="styles.css">
+        <link rel="stylesheet" href="https://cloudflare.com">
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link
-            href="https://fonts.googleapis.com/css2?family=Fruktur:ital@0;1&family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap"
-            rel="stylesheet"
-        >
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Intel+One+Mono:ital,wght@0,300..700;1,300..700&display=swap" rel="stylesheet">
+        
         <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-        <title>ONSET-Test</title>
+        <title>LückenTraum</title>
     </head>
+
     <body>
         <nav class="navbar">
-            <a href="#" id="toHome">home</a>
-            <a href="#" style="display: none;">lifehacks</a>
-            <a href="#" id="nav-simulations">simulation</a>
-        </nav>
-        <div id="homepage">
-            <h1>Lückentest</h1>
-            <div class="welcome-container">
-                <img src="css/kot2.png" alt="Кот" class="welcome-cat">
-                <button id="losgeht_btn">Los gehts</button>
+            <div class="nav-links">
+                <a href="#" id="toHome">HOME</a>
+                <a href="#about-us-btn" id="toAbout">ABOUT US</a>
+                <a href="#" id="nav-simulations">SIMULATOR</a>
+                <a href="#contacts-btn" id="contacts">CONTACTS</a>
             </div>
-            <section class="about-uns">
-                <h2>was ist das, man?</h2>
-                <div class="about-container">
-                    <div class="about-text">
-                        Привет, это небольшой сайт-тренажер, чтобы подготовиться к распределительному тесту по немецкому
-                        языку. Понимаю, что очень нервно готовиться, и душит страх попадания в партнёры за охренительно
-                        большие деньги, поэтому такая задумка и родилась на свет.
-                        Милый котик от <a href=https://vk.com/id344434599>великолепной Ирины</a> на главной странице - это талисман и бро, который будет сопровождать тебя в процессе подготовки и
-                        поддерживать в моменты сомнений. Он уже прошёл через это и знает, что ты справишься! Удачи тебе, и помни, что ты не один. Если у тебя есть вопросы или нужна помощь, не стесняйся обращаться. 
-                        Вместе мы справимся с этим тестом и достигнем наших целей!
+            <a href="#" id="nav-login" class="login-link">LOGIN</a>
+        </nav>
+        
+        <div
+                id="auth-section"
+                style="display: none; background: #2E2828; color: #E2E2E2; padding: 15px; text-align: center; font-size: 18px;"
+            >
+                <span>Введи свой индивидуальный ключ для доступа ко всем тренажёрам: </span>
+                <input
+                    type="text"
+                    id="access-key-input"
+                    style="padding: 5px; font-size: 16px; border-radius: 5px; border: none; margin: 0 10px;"
+                >
+                <button
+                    id="login-submit-btn"
+                    style="background: #E2E2E2; color: #2E2828; padding: 5px 15px; font-size: 16px;"
+                >
+                    Отправить
+                </button>
+            </div>
+
+        <div id="homepage">
+            <header class="hero-section">
+                <h1 class="main-title">LÜCKENTRAUM</h1>
+                
+                <div class="hero-grid">
+                    <div class="hero-item">
+                        <img src="/css/workspace.png" alt="Workspace Image" class="hero-image">
+                    </div>
+                    <div class="hero-content">
+                        <p class="hero-description">
+                            Это независимый интерактивный тренажер, созданный специально для тех, кто готовится к сдаче экзамена onSET
+                        </p>
+                        <button id="losgeht_btn">ПОПРОБОВАТЬ</button>
+                    </div>
+                </div>
+            </header>
+
+            <section class="about-us-section" id="about-us-btn">
+                <div class="about-us-container">
+                    <div class="about-content">
+                        <h2>ABOUT US</h2>
+                        <p class="about-text">
+                            Большинство языковых платформ перегружены лишней теорией, а наем репетиторов обходится в сотни евро. 
+                            Этот проект доказывает, что подготовка к сложному Lückentext может быть эффективной, доступной и эстетичной. 
+                            В основе симулятора лежит умный алгоритм и реальная база заданий. Никакой воды — только целенаправленная 
+                            тренировка языкового чутья, которая сэкономит ваше время и деньги, превращая рутину в понятный пошаговый процесс.
+                        </p>
+                    </div>
+                    <div class="about-image">
+                        <img src="/css/kot2.png" alt="Кiт" class="about-cat-img">
                     </div>
                 </div>
             </section>
+
+            <section class="pluses-section">
+                <h2>WAS GIBT ES HIER?</h2>
+                <div class="pluses-container">
+                    <div class="plus-item">
+                        <img src="/css/plus.png" alt="Plus 1" class="plus-image">
+                        <p class="plus-description">Прям как на тесте</p>
+                        <span class="plus-details"> Полная имитация реального теста с учетом всех нюансов, что поможет не растеряться на распределительном тесте</span>
+                    </div>
+                    <div class="plus-item">
+                        <img src="/css/plus.png" alt="Plus 2" class="plus-image">
+                        <p class="plus-description">Куча практики</p>
+                        <span class="plus-details"> Более 100 текстов для практики, охватывающих широкий спектр тем и уровней сложности</span>
+                    </div>
+                    <div class="plus-item">
+                        <img src="/css/plus.png" alt="Plus 3" class="plus-image">
+                        <p class="plus-description">Простота дизайна</p>
+                        <span class="plus-details"> Минимум деталей, чтобы ничего не отвлекало при отработке грамматики и скорости решения теста</span>
+                    </div>
+            </section>
+
+            <hr class="solid">
+
+            <section class="contacts-section" id="contacts-btn">
+                <h3>LÜCKENTRAUM</h3>
+                <a class="btn_telegram_share" href="https://web.telegram.org/k/#@onset_prep"></a>
+
+            </section>
         </div>
+
+        
+
         <div id="instructions-page" style="display: none;">
             <h2>Anleitung</h2>
-            <div class="instructions-container" style="margin-bottom: 20px; font-size: 20px; line-height: 1.6;">
+            <div class="instructions-container">
                 <section class="instruction">
                     <strong>Hinweise zum Test</strong><br><br>
                     Bitte in Ruhe lesen. Die Zeit läuft noch nicht.<br>
@@ -58,6 +128,7 @@
                     beenden" klicken.<br><br>
                     Klicken Sie nun auf "Test starten", um den ersten Text zu bearbeiten.
                 </section>
+
                 <section class="instruction">
                     <strong>Примечания к тестированию</strong><br><br>
                     Пожалуйста, прочтите внимательно и спокойно. Таймер, время ещё не идёт.<br>
@@ -74,26 +145,12 @@
             </div>
             <button id="start-simulation-btn">Test starten</button>
         </div>
+
+
         <div id="simulations" style="display: none;">
-            <div
-                id="auth-section"
-                style="display: none; background: #671830; color: #fef0e2; padding: 15px; text-align: center; font-size: 18px;"
-            >
-                <span>Введи свой индивидуальный ключ для доступа ко всем тренажёрам: </span>
-                <input
-                    type="text"
-                    id="access-key-input"
-                    style="padding: 5px; font-size: 16px; border-radius: 5px; border: none; margin: 0 10px;"
-                >
-                <button
-                    id="login-submit-btn"
-                    style="background: #fef0e2; color: #671830; padding: 5px 15px; font-size: 16px;"
-                >
-                    Войти
-                </button>
-            </div>
-            <h2>onSet Simulation</h2>
-            <div id="timer_box">05:00</div>
+            
+            <h2>Lückentexts</h2>
+           <div id="timer_box">05:00</div>
             <div id="text-container"></div>
             <div id="german-keys" class="keys-bar">
                 <button type="button" class="key" data-char="ä">ä</button>
@@ -102,6 +159,7 @@
                 <button type="button" class="key" data-char="ß">ß</button>
             </div>
             <button id="check-btn">Weiter</button>
+            
         </div>
         <script src="script.js"></script>
     </body>

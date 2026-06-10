@@ -8,6 +8,7 @@
     const homePage = document.getElementById("homepage");
     const simulationPage = document.getElementById("simulations");
     const textContainer = document.getElementById("text-container");
+    const navLoginBtn = document.getElementById("nav-login");
 
     const startBtn = document.getElementById("losgeht_btn");
     const navSimBtn = document.getElementById("nav-simulations");
@@ -58,7 +59,7 @@
     document.getElementById("german-keys").addEventListener("mousedown", enterGermanKey);
     document.getElementById("german-keys").addEventListener("touchstart", enterGermanKey);
 
-    // Kein Copy)
+    // Kein Copy:))
     document.addEventListener("contextmenu", (element) => {
         element.preventDefault();
     });
@@ -137,6 +138,27 @@
     navSimBtn.addEventListener("click", showSimulation);
     homeBtn.addEventListener("click", showHomepage);
     realStartBtn.addEventListener("click", beginSimulation);
+    navLoginBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+
+        const isAuthorised = localStorage.getItem("user_access_key");
+        if (isAuthorised) {
+            if (confirm("Вы уже авторизованы. Хотите выйти?")) {
+                localStorage.removeItem("user_access_key");
+                alert("Вы вышли из аккаунта.");
+                window.location.reload();
+            }
+        } else {
+
+            if (authSection.style.display === "none" || authSection.style.display === "") {
+                showAuthForm();
+                keyInput.focus();
+            } else {
+                hideAuthForm();
+            }
+        }
+    });
+
 
     // ГЕНЕРАТОР ONSET
     function onsetText(textToProcess) {
@@ -163,15 +185,13 @@
 
                     if (wordIndex % 2 === 1 && cleanWord.length > 1) {
                         const keepcount = Math.floor(cleanWord.length / 2);
-                        // const missingcount = cleanWord.length - keepcount;
 
                         const toKeep = cleanWord.substring(0, keepcount);
                         const toHide = cleanWord.substring(keepcount);
 
                         const prefix = word.substring(0, word.indexOf(cleanWord));
                         const suffix = word.substring(word.indexOf(cleanWord) + cleanWord.length);
-                        // const toInputWord = Math.max(missingcount * 12, 25);
-                        const maxLength = 20; // думаю ок
+                        const maxLength = 20;
                         const maxWidth = 10;
 
                         return `<span class="processed">${prefix}${toKeep}<input type="text" autocorrect="off" autocapitalize="none" spellcheck="false" class="test-input" data-answer="${toHide}" maxlength="${maxLength}" style="width: ${maxWidth}ch;">${suffix}</span>`;
@@ -187,17 +207,20 @@
     }
 
     async function checkCurrentAccess() {
-        const savedKey = localStorage.getItem("user_access_key");
-        if (savedKey) {
-            const hasAccess = await verifyKeyInDatabase(savedKey);
-            if (hasAccess) {
-                hideAuthForm();
-                return true;
+    const savedKey = localStorage.getItem("user_access_key");
+    if (savedKey) {
+        const hasAccess = await verifyKeyInDatabase(savedKey);
+        if (hasAccess) {
+            hideAuthForm();
+            if (navLoginBtn) {
+                navLoginBtn.innerText = "LOGOUT";
             }
+            return true;
         }
-        showAuthForm();
-        return false;
     }
+    showAuthForm();
+    return false;
+}
 
     async function verifyKeyInDatabase(key) {
         if (!key || key === "null" || key === undefined) {
@@ -297,7 +320,7 @@
         startTimer(300);
     }
 
-    // I love you too
+
     if (location.hostname !== "localhost" && location.hostname !== "127.0.0.1") {
         setInterval(() => {
             (() => false).constructor("debugger")();
