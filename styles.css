@@ -12,7 +12,7 @@ h2 {
     font-family: var(--font-accent);
     font-size: 50px;
     letter-spacing: 2px;
-    padding-bottom: 60px;
+    padding: 30px 0 20px;
 }
 
 hr.solid {
@@ -107,10 +107,11 @@ html{
 .hero-content {
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start;
     height: auto;
-    gap: 40px; 
+    gap: 20px; 
     align-items: flex-start;
+    box-sizing: border-box;
 }
 .hero-description {
     font-family: var(--font-main);
@@ -148,6 +149,7 @@ button:hover {
     transition: all 0.2s ease;
     align-self: flex-start; 
     letter-spacing: 1px;
+    margin-top: auto;
 }
 
 #losgeht_btn:hover {
@@ -271,6 +273,38 @@ PLUSES SECTION
 /*==========
 ИНСТРУКЦИЯ 
 ============*/
+.session-setting-bar {
+    display: flex;
+    gap: 30px;
+    width: 100%;
+    margin-bottom: 30px;
+    box-sizing: border-box;
+}
+.setting-item {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex: 1;
+    max-width: 300px; 
+}
+.setting-item label {
+    font-size: 14px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--bg-dark);
+}
+.setting-item select {
+    font-family: var(--font-main), monospace;
+    font-size: 16px;
+    padding: 10px 12px;
+    border: 2px solid var(--bg-dark);
+    background: var(--bg-light);
+    color: var(--bg-dark);
+    cursor: pointer;
+    outline: none;
+    transition: background 0.2s ease;
+}
 
 #instructions-page .instructions-container {
     font-size: 16px;
@@ -282,6 +316,9 @@ PLUSES SECTION
 #instructions-page {
     padding: 0 8%;
     box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-self: flex-start;
 }
 
 #start-simulation-btn {
@@ -296,6 +333,11 @@ PLUSES SECTION
     transition: all 0.2s ease;
     align-self: flex-start; 
     letter-spacing: 1px;
+}
+.timer-toggle-container {
+    display: flex;
+    align-items: center;
+    margin-top: 20px;
 }
 
 /*============
@@ -343,13 +385,21 @@ PLUSES SECTION
     outline: none;
 }
 
-.instructions-container {
-    display: flex;
-}
-.instruction {
-    padding: 0 2ch;
-}
 @media (max-width: 768px) {
+    .session-settings-bar {
+        flex-direction: column;
+        gap: 15px;
+        padding: 15px;
+    }
+    .setting-item {
+        max-width: 100%;
+    }
+    .timer-toggle-container {
+        text-align: center;
+    }
+    .instructions-page {
+        align-items: center;
+    }
     .instructions-container {
         flex-direction: column;
     }
