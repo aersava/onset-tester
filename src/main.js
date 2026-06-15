@@ -44,6 +44,7 @@ startBtn.addEventListener("click", () => navigateTo('instructions'));
 navSimBtn.addEventListener("click", () => navigateTo('instructions'));
 homeBtn.addEventListener("click", () => navigateTo('homepage'));
 realStartBtn.addEventListener("click", beginSimulation);
+login.addEventListener("click", handleLogin);
 
 navLoginBtn.addEventListener("click", (e) => {
     e.preventDefault();
