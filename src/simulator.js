@@ -9,7 +9,6 @@ const timerCheckBox = document.getElementById("timer-toggle-checkbox");
 export const usedTextIds = [];
 export let simulatorTexts = [];
 
-export let selectedCategory = "all";
 export let selectedLevel = "all";
 export let totalScore = 0;
 export let totalGaps = 0;
@@ -86,10 +85,8 @@ export function startTimer(durationInSek) {
 }
 
 export function beginSimulation() {
-    const categorySelect = document.getElementById("filter-category");
     const levelSelect = document.getElementById("filter-level");
 
-    if (categorySelect) selectedCategory = categorySelect.value;
     if (levelSelect) selectedLevel = levelSelect.value;
 
     navigateTo('simulations');
@@ -116,14 +113,11 @@ export function loadNextText() {
     let filtered = simulatorTexts.filter((text) => {
         const hasAccess = savedKey || text.is_free;
         
-        // Сортировка по категории и уровеню
-        const matchesCategory = selectedCategory === "all" || 
-            (text.category && text.category.trim().toLowerCase() === selectedCategory.trim().toLowerCase());
-
+        // Сортировка по уровеню
         const matchesLevel = selectedLevel === "all" || 
             (text.level && text.level.trim().toUpperCase() === selectedLevel.trim().toUpperCase());
             
-        return hasAccess && matchesCategory && matchesLevel;
+        return hasAccess && matchesLevel;
     });
 
     const maxTextsInTest = Math.min(8, filtered.length);
@@ -146,7 +140,7 @@ export function loadNextText() {
     if (newTexts.length === 0) {
         textContainer.innerHTML = `
             <div style="text-align: center; padding: 30px; font-family: var(--font-main);">
-                <p>Текстов в категории "${selectedCategory}" (${selectedLevel}) не найдено.</p>
+                <p>Текстов уровня (${selectedLevel}) не найдено.</p>
             </div>`;
         return;
     }
@@ -161,10 +155,9 @@ export function loadNextText() {
 
     const mainHeader = simulationPage.querySelector("h2");
     if (mainHeader) {
-        const currentCategory = data.category ? data.category.toUpperCase() : "ОБЩАЯ";
         const currentLevel = data.level ? data.level.toUpperCase() : "A2"; 
 
-        mainHeader.innerHTML = `Lückentexts <span style="font-size: 14px; font-family: var(--font-main); background: var(--bg-dark); color: var(--bg-light); padding: 4px 10px; margin-left: 15px; vertical-align: middle; border-radius: 3px; letter-spacing: 1px;">${currentCategory} • ${currentLevel}</span>`;
+        mainHeader.innerHTML = `Lückentexts <span style="font-size: 14px; font-family: var(--font-main); background: var(--bg-dark); color: var(--bg-light); padding: 4px 10px; margin-left: 15px; vertical-align: middle; border-radius: 3px; letter-spacing: 1px;"> ${currentLevel}</span>`;
     }
     textContainer.innerHTML = renderedText;
         
@@ -178,6 +171,12 @@ function handleNextButtonClick() {
         loadNextText();
         return;
     }
+
+    const currentTextId = usedTextIds[usedTextIds.length - 1];
+    if(currentTextId){
+        saveCompletedTextIds(currentTextId);
+    }
+
     const inputs = textContainer.querySelectorAll(".test-input");
     let correct = 0;
     for (const input of inputs) {
@@ -236,6 +235,36 @@ function finalizeResult(maxTexts) {
 nextBtn?.addEventListener("click", handleNextButtonClick);
 
 export function resetFilters() {
-    selectedCategory = "all";
     selectedLevel = "all";
+}
+
+//сохранение решенных текстов в айдишнике
+async function saveCompletedTextIds(textId) {
+    const savedKey = localStorage.getItem("user_access_key");
+    if (!savedKey) return;
+
+    try {
+        const {data: profile, error: selectError } = await supabaseClient
+        .from("access_keys")
+        .select("used_id_texts")
+        .eq("key_value", savedKey)
+        .single();
+        if (selectError) throw selectError;
+
+        const surrentSolved = profile.used_id_texts || [];
+
+        if(!currentSolved.includes(textId)) {
+            const updatedSolved = [...currentSolved, textId];
+
+            const {error: updateError } = await supabaseClient
+            .from("access_keys")
+            .update({ used_id_texts: updatedSolved })
+            .eq("key_value", savedKey);
+
+            if (updateError) throw updateError;
+            console.log(`Текст с ID ${textId} успешно сохранен как решенный.`);
+        }
+    } catch (error) {
+        console.error("Ошибка при сохранении решенного текста:", err);
+    }
 }

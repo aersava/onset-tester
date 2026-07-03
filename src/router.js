@@ -32,7 +32,7 @@ function switchPage(pageId, pushToHistory = true) {
     const navSimBtn = document.getElementById("nav-simulations");
     const buttonToHide = document.querySelectorAll('.filterable-nav');
 
-    if (pageId === 'instructions' || pageId === 'simulations') {
+    if (pageId === 'instructions' || pageId === 'simulations' || pageId === 'articlespage') {
         buttonToHide.forEach(btn => btn.style.display = 'none');
     } else {
         buttonToHide.forEach(btn => btn.style.display = '');

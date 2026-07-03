@@ -22,6 +22,7 @@
                 <a href="#about-us-btn" id="toAbout" class="filterable-nav">ABOUT US</a>
                 <a href="javascript:void(0)" id="nav-simulations" class="filterable-nav">SIMULATOR</a>
                 <a href="#contacts-btn" id="contacts" class="filterable-nav">CONTACTS</a>
+                <a href="javascript:void(0)" id="nav-articles" style="display: none;">THEORIE</a>
             </div>
             <a href="#" id="nav-login" class="login-link">LOGIN</a>
         </nav>
@@ -114,31 +115,6 @@
 
             <div class ="session-setting-bar" id="filtered-container">
                 <div class="setting-item">
-                    <label for="filter-category">Thema/Тема</label>
-                    <select id="filter-category">
-                        <option value="all">Alle Themen/Все темы</option>
-                        <option value="work">Beruf/Работа</option>
-                        <option value="education">Bildung/Образование</option>
-                        <option value="biology">Biologie/Биология</option>
-                        <option value="computer">Computer/Компьютеры</option>
-                        <option value="food">Ernährung/Питание</option>
-                        <option value="family">Familie/Семья</option>
-                        <option value="history">Geschichte/История</option>
-                        <option value="society">Gesellschaft/Общество</option>
-                        <option value="jugend">Jugend/Юность</option>
-                        <option value="kultur">Kultur/Культура</option>
-                        <option value="medicine">Medizin/Медицина</option>
-                        <option value="okologie">Ökologie/Экология</option>
-                        <option value="psychologie">Psychologie/Психология</option>
-                        <option value="schule">Schule/Школа</option>
-                        <option value="sport">Sport/Спорт</option>
-                        <option value="studium">Studium/Учеба</option>
-                        <option value="tourismus">Tourismus/Туризм</option>
-                        <option value="hobbies">Hobbys/Хобби</option>
-                    </select>      
-                </div>
-
-                <div class="setting-item">
                     <label for="filter-level">Niveau/Уровень</label>
                     <select id="filter-level">
                         <option value="all">Alle Niveaus/Все уровни</option>
@@ -206,6 +182,20 @@
             <button id="check-btn">Weiter</button>
             
         </div>
+
+        <div id="articles-page" style="display: none;">
+            <h2>Grammatik & Lexikon / Теория</h2>
+            <p style="font-family: 'Intel One Mono', monospace; margin-bottom: 30px;">
+                Выбери тему, чтобы разогреть мозг перед симулятором:
+            </p>
+            <div id="articles-grid" class="articles-grid">
+                <p>Загрузка доступных тем...</p>
+            </div>
+        </div>
         <script type="module" src="/src/main.js"></script>
+
+        <footer style="text-align: center; padding: 20px; font-family: monospace; font-size: 12px;">
+            © 2026 LückenTraum. Все права защищены. <a href="oferta.html" style="color: inherit;">Публичная оферта</a>
+        </footer>
     </body>
 </html>
