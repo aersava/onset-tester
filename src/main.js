@@ -20,6 +20,7 @@ const simulationPage = document.getElementById("simulations");
 const textContainer = document.getElementById("text-container");
 const navLoginBtn = document.getElementById("nav-login");
 const articlesPage = document.getElementById("articles-page");
+const ofertaPage = document.getElementById("oferta-page");
 
 const navArticlesBtn = document.getElementById("nav-articles");
 const startBtn = document.getElementById("losgeht_btn");
@@ -46,6 +47,13 @@ navSimBtn.addEventListener("click", () => navigateTo('instructions'));
 homeBtn.addEventListener("click", () => navigateTo('homepage'));
 realStartBtn.addEventListener("click", beginSimulation);
 login.addEventListener("click", handleLogin);
+document.getElementById("toHomeFromOferta")?.addEventListener("click", () => {
+    navigateTo('homepage');
+});
+document.getElementById("open-oferta-btn")?.addEventListener("click", (e) => {
+    e.preventDefault();
+    navigateTo('ofertapage');
+});
 
 navLoginBtn.addEventListener("click", (e) => {
     e.preventDefault();
@@ -217,7 +225,8 @@ window.addEventListener("DOMContentLoaded", async () => {
         homepage: homePage,
         simulations: simulationPage,
         instructions: instructionsPage,
-        articlespage: articlesPage
+        articlespage: articlesPage,
+        ofertapage: ofertaPage
     });
     if (window.location.hash === '#articlespage') {
         hideAuthForm();
@@ -227,3 +236,4 @@ window.addEventListener("DOMContentLoaded", async () => {
     }
     await loadAllContent();
 });
+

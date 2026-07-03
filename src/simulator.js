@@ -251,7 +251,7 @@ async function saveCompletedTextIds(textId) {
         .single();
         if (selectError) throw selectError;
 
-        const surrentSolved = profile.used_id_texts || [];
+        const currentSolved = profile.used_id_texts || [];
 
         if(!currentSolved.includes(textId)) {
             const updatedSolved = [...currentSolved, textId];
@@ -265,6 +265,6 @@ async function saveCompletedTextIds(textId) {
             console.log(`Текст с ID ${textId} успешно сохранен как решенный.`);
         }
     } catch (error) {
-        console.error("Ошибка при сохранении решенного текста:", err);
+        console.error("Ошибка при сохранении решенного текста:", error);
     }
 }
