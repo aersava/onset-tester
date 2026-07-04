@@ -22,6 +22,7 @@
                 <a href="#about-us-btn" id="toAbout" class="filterable-nav">ABOUT US</a>
                 <a href="javascript:void(0)" id="nav-simulations" class="filterable-nav">SIMULATOR</a>
                 <a href="#contacts-btn" id="contacts" class="filterable-nav">CONTACTS</a>
+                <a href="javascript:void(0)" id="nav-articles" style="display: none;">THEORIE</a>
             </div>
             <a href="#" id="nav-login" class="login-link">LOGIN</a>
         </nav>
@@ -114,31 +115,6 @@
 
             <div class ="session-setting-bar" id="filtered-container">
                 <div class="setting-item">
-                    <label for="filter-category">Thema/Тема</label>
-                    <select id="filter-category">
-                        <option value="all">Alle Themen/Все темы</option>
-                        <option value="work">Beruf/Работа</option>
-                        <option value="education">Bildung/Образование</option>
-                        <option value="biology">Biologie/Биология</option>
-                        <option value="computer">Computer/Компьютеры</option>
-                        <option value="food">Ernährung/Питание</option>
-                        <option value="family">Familie/Семья</option>
-                        <option value="history">Geschichte/История</option>
-                        <option value="society">Gesellschaft/Общество</option>
-                        <option value="jugend">Jugend/Юность</option>
-                        <option value="kultur">Kultur/Культура</option>
-                        <option value="medicine">Medizin/Медицина</option>
-                        <option value="okologie">Ökologie/Экология</option>
-                        <option value="psychologie">Psychologie/Психология</option>
-                        <option value="schule">Schule/Школа</option>
-                        <option value="sport">Sport/Спорт</option>
-                        <option value="studium">Studium/Учеба</option>
-                        <option value="tourismus">Tourismus/Туризм</option>
-                        <option value="hobbies">Hobbys/Хобби</option>
-                    </select>      
-                </div>
-
-                <div class="setting-item">
                     <label for="filter-level">Niveau/Уровень</label>
                     <select id="filter-level">
                         <option value="all">Alle Niveaus/Все уровни</option>
@@ -206,6 +182,61 @@
             <button id="check-btn">Weiter</button>
             
         </div>
+
+        <div id="articles-page" style="display: none;">
+            <h2>Grammatik & Lexikon / Теория</h2>
+            <p style="font-family: 'Intel One Mono', monospace; margin-bottom: 30px;">
+                Выбери тему, чтобы разогреть мозг перед симулятором:
+            </p>
+            <div id="articles-grid" class="articles-grid">
+                <p>Загрузка доступных тем...</p>
+            </div>
+        </div>
+
+        <!-- Страница Публичной Оферты -->
+        <div id="oferta-page" style="display: none; max-width: 800px; margin: 40px auto; padding: 40px; background: #FFFFFF; color: #2E2828; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); line-height: 1.6; font-family: sans-serif;">
+            <button id="toHomeFromOferta" style="background: none; border: none; font-family: monospace; font-size: 14px; font-weight: bold; color: #2E2828; cursor: pointer; padding: 0; margin-bottom: 30px; text-transform: uppercase;">← На главную</button>
+            
+            <h1 style="font-size: 28px; font-weight: bold; margin-bottom: 10px; border-bottom: 2px solid #2E2828; padding-bottom: 15px;">Публичная оферта</h1>
+            <p style="font-family: monospace; font-size: 13px; margin-bottom: 20px;">Последнее обновление: Июль 2026 г.</p>
+
+            <p style="text-align: justify; color: #4A4A4A; margin-bottom: 15px;">Настоящий документ является официальным предложением (публичной офертой) Разработчика Сервиса (далее — «Исполнитель») и содержит все существенные условия по предоставлению доступа к интерактивному онлайн-тренажеру «LückenTraum» (далее — «Сервис»).</p>
+
+            <h2 style="font-size: 18px; margin-top: 30px; margin-bottom: 10px;">1. Общие положения</h2>
+            <ul style="padding-left: 20px; color: #4A4A4A; margin-bottom: 20px;">
+                <li style="margin-bottom: 8px;"><strong>1.1.</strong> В рамках настоящего Договора Исполнитель предоставляет Пользователю доступ к программным возможностям Сервиса на условиях, изложенных ниже.</li>
+                <li style="margin-bottom: 8px;"><strong>1.2.</strong> Получение уникального Ключа доступа Исполнителя и его последующий ввод на Сайте Сервиса является полным и безоговорочным акцептом (принятием) условий настоящего Договора.</li>
+            </ul>
+
+            <h2 style="font-size: 18px; margin-top: 30px; margin-bottom: 10px;">2. Предмет договора и порядок получения доступа</h2>
+            <ul style="padding-left: 20px; color: #4A4A4A; margin-bottom: 20px;">
+                <li style="margin-bottom: 8px;"><strong>2.1.</strong> Исполнитель предоставляет Пользователю доступ к Сервису «LückenTraum», предназначенному для подготовки к языковому тестированию onSET.</li>
+                <li style="margin-bottom: 8px;"><strong>2.2.</strong> Доступ предоставляется путем передачи уникального Ключа доступа Пользователю в индивидуальном порядке после согласования и подтверждения оплаты.</li>
+                <li style="margin-bottom: 8px;"><strong>2.3.</strong> На самом Сайте Сервиса прямая оплата не осуществляется и платежные данные пользователей не собираются.</li>
+            </ul>
+
+            <h2 style="font-size: 18px; margin-top: 30px; margin-bottom: 10px;">3. Интеллектуальная собственность</h2>
+            <ul style="padding-left: 20px; color: #4A4A4A; margin-bottom: 20px;">
+                <li style="margin-bottom: 8px;"><strong>3.1.</strong> Все материалы, тексты заданий, программный код, алгоритмы тренажера и дизайн Сервиса являются объектами интеллектуальной собственности Исполнителя.</li>
+                <li style="margin-bottom: 8px;"><strong>3.2.</strong> Любое копирование, тиражирование, парсинг базы данных, распространение материалов или несанкционированная перепродажа Ключей доступа третьим лицам категорически запрещены.</li>
+            </ul>
+
+            <h2 style="font-size: 18px; margin-top: 30px; margin-bottom: 10px;">4. Порядок возврата денежных средств</h2>
+            <ul style="padding-left: 20px; color: #4A4A4A; margin-bottom: 20px;">
+                <li style="margin-bottom: 8px;"><strong>4.1.</strong> Пользователь соглашается с тем, что Сервис предоставляется в формате цифрового контента, доступ к которому открывается немедленно после ввода Ключа.</li>
+                <li style="margin-bottom: 8px;"><strong>4.2.</strong> В связи с тем, что Сервис предоставляет возможность бесплатно ознакомиться с интерфейсом и механикой работы тренажера (демо-версия) до момента получения Ключа, после передачи и активации платного Ключа доступа услуга считается оказанной в полном объеме, и денежные средства возврату не подлежат.</li>
+            </ul>
+
+            <h2 style="font-size: 18px; margin-top: 30px; margin-bottom: 10px;">5. Отказ от ответственности</h2>
+            <ul style="padding-left: 20px; color: #4A4A4A; margin-bottom: 20px;">
+                <li style="margin-bottom: 8px;"><strong>5.1.</strong> Сервис предоставляется на условиях «как есть» (as is). Исполнитель не гарантирует конкретный результат или 100% сдачу экзамена onSET, так как итоговый балл зависит исключительно от усилий самого Пользователя.</li>
+                <li style="margin-bottom: 8px;"><strong>5.2.</strong> Исполнитель не несет ответственности за временные технические сбои в работе хостинга или сторонних баз данных.</li>
+            </ul>
+        </div>
         <script type="module" src="/src/main.js"></script>
+
+        <footer  style="text-align: center; padding: 20px; font-family: monospace; font-size: 12px;">
+            © 2026 LückenTraum. Все права защищены. <a href="#" id="open-oferta-btn" style="color: inherit; text-decoration: underline;">Публичная оферта</a>
+        </footer>
     </body>
 </html>

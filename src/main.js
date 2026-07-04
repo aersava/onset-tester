@@ -4,7 +4,6 @@ import {
     beginSimulation,
     loadNextText,
     simulatorTexts,
-    selectedCategory,
     selectedLevel,
     timerEnabled,
     resetFilters
@@ -20,7 +19,10 @@ const homePage = document.getElementById("homepage");
 const simulationPage = document.getElementById("simulations");
 const textContainer = document.getElementById("text-container");
 const navLoginBtn = document.getElementById("nav-login");
+const articlesPage = document.getElementById("articles-page");
+const ofertaPage = document.getElementById("oferta-page");
 
+const navArticlesBtn = document.getElementById("nav-articles");
 const startBtn = document.getElementById("losgeht_btn");
 const navSimBtn = document.getElementById("nav-simulations");
 const homeBtn = document.getElementById("toHome");
@@ -39,12 +41,19 @@ const realStartBtn = document.getElementById("start-simulation-btn");
 const timerCheckBox = document.getElementById("timer-toggle-checkbox");
 let isPremium = false;
 
-
+navArticlesBtn.addEventListener("click", () => navigateTo('articlespage'));
 startBtn.addEventListener("click", () => navigateTo('instructions'));
 navSimBtn.addEventListener("click", () => navigateTo('instructions'));
 homeBtn.addEventListener("click", () => navigateTo('homepage'));
 realStartBtn.addEventListener("click", beginSimulation);
 login.addEventListener("click", handleLogin);
+document.getElementById("toHomeFromOferta")?.addEventListener("click", () => {
+    navigateTo('homepage');
+});
+document.getElementById("open-oferta-btn")?.addEventListener("click", (e) => {
+    e.preventDefault();
+    navigateTo('ofertapage');
+});
 
 navLoginBtn.addEventListener("click", (e) => {
     e.preventDefault();
@@ -151,6 +160,50 @@ async function loadAllContent() {
     } catch (error) {
         console.error("сломався:", error);
     }
+
+    try {
+        const { data: fetchedArticles, error: articlesError } = await supabaseClient
+            .rpc('get_public_articles');
+
+        if (!articlesError && fetchedArticles) {
+            const gridContainer = document.getElementById('articles-grid');
+            
+            if (gridContainer) {
+                gridContainer.innerHTML = ''; 
+
+                fetchedArticles.forEach(art => {
+                    const card = document.createElement('a');
+                    card.href = `article.html?slug=${art.slug}`;
+                    card.className = 'article-card';
+                    card.style.textDecoration = 'none';
+
+                    card.innerHTML = `
+                        <div class="card-inner" style="display: flex; gap: 20px; padding: 15px; background: #E2E2E2; color: #2E2828; border-radius: 8px; margin-bottom: 20px;">
+                            <div class="card-image" style="width: 120px; height: 120px; flex-shrink: 0;">
+                                <img src="css/workspace.png" alt="Урок" style="width: 100%; height: 100%; object-fit: cover; border-radius: 4px;">
+                            </div>
+                            <div class="card-text" style="display: flex; flex-direction: column; justify-content: center;">
+                                <span style="font-size: 11px; font-family: monospace; background: #2E2828; color: #E2E2E2; padding: 2px 6px; border-radius: 3px; width: fit-content; margin-bottom: 8px;">
+                                    ${art.category || 'Grammatik'}
+                                </span>
+                                <h3 style="margin: 0 0 8px 0; font-size: 20px; font-family: sans-serif; font-weight: bold;">
+                                    ${art.title}
+                                </h3>
+                                <p style="margin: 0; font-size: 14px; line-height: 1.4; color: #4A4A4A;">
+                                    ${art.summary}
+                                </p>
+                            </div>
+                        </div>
+                    `;
+                    gridContainer.appendChild(card);
+                });
+            }
+        } else {
+            console.error("Ошибка RPC статей:", articlesError);
+        }
+    } catch (articleErr) {
+        console.error("Не удалось собрать каталог статей:", articleErr);
+    }
 }
 
 function updateSortingVisibility() {
@@ -162,9 +215,7 @@ function updateSortingVisibility() {
         filterBlock.style.display = 'none';
         resetFilters();
 
-        const categorySelect = document.getElementById("filter-category");
         const levelSelect = document.getElementById("filter-level");
-        if (categorySelect) categorySelect.value = "all";
         if(levelSelect) levelSelect.value = "all";
     }
 }
@@ -173,8 +224,16 @@ window.addEventListener("DOMContentLoaded", async () => {
     initRouter({
         homepage: homePage,
         simulations: simulationPage,
-        instructions: instructionsPage
+        instructions: instructionsPage,
+        articlespage: articlesPage,
+        ofertapage: ofertaPage
     });
-    await checkCurrentAccess();
+    if (window.location.hash === '#articlespage') {
+        hideAuthForm();
+        navigateTo('articlespage');
+    } else {
+        await checkCurrentAccess();
+    }
     await loadAllContent();
 });
+
