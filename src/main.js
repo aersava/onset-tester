@@ -55,6 +55,26 @@ document.getElementById("open-oferta-btn")?.addEventListener("click", (e) => {
     navigateTo('ofertapage');
 });
 
+document.addEventListener("DOMContentLoaded", () => {
+    const menuToggle = document.getElementById("menu-toggle");
+    const navContainer = document.getElementById("nav-container");
+    const navLinks = document.querySelectorAll("#nav-container a");
+
+    if(menuToggle && navContainer) {
+        menuToggle.addEventListener("click", () => {
+            menuToggle.classList.toggle("active");
+            navContainer.classList.toggle("active");
+        });
+
+        navLinks.forEach(link => {
+            link.addEventListener("click", () => {
+                menuToggle.classList.remove("active");
+                navContainer.classList.remove("active");
+            });
+        });
+    }
+});
+
 navLoginBtn.addEventListener("click", (e) => {
     e.preventDefault();
 
@@ -151,6 +171,7 @@ async function loadAllContent() {
         });
 
         if (!textError) {
+            simulatorTexts.length = 0; 
             simulatorTexts.push(...fetchedTexts);
             console.log(`Успешно загружено текстов: ${simulatorTexts.length}`);
         } else {
@@ -161,48 +182,94 @@ async function loadAllContent() {
         console.error("сломався:", error);
     }
 
+    await loadArticlesGrid();
+}
+
+async function loadArticlesGrid() {
+    const articlesGrid = document.getElementById("articles-grid");
+    if (!articlesGrid) return;
+
+    const savedKey = localStorage.getItem("user_access_key") || "no_key_provided";
+    articlesGrid.innerHTML = "<p>Загрузка доступных тем...</p>";
+
     try {
-        const { data: fetchedArticles, error: articlesError } = await supabaseClient
-            .rpc('get_public_articles');
+        const { data: articles, error } = await supabaseClient
+            .rpc('get_articles_preview', { user_key: savedKey });
 
-        if (!articlesError && fetchedArticles) {
-            const gridContainer = document.getElementById('articles-grid');
-            
-            if (gridContainer) {
-                gridContainer.innerHTML = ''; 
+        if (error || !articles) {
+            articlesGrid.innerHTML = "<p>Не удалось загрузить темы. Пожалуйста, обновите страницу.</p>";
+            console.error("Ошибка RPC статей:", error);
+            return;
+        }
 
-                fetchedArticles.forEach(art => {
-                    const card = document.createElement('a');
-                    card.href = `article.html?slug=${art.slug}`;
-                    card.className = 'article-card';
-                    card.style.textDecoration = 'none';
+        articlesGrid.innerHTML = "";
 
-                    card.innerHTML = `
-                        <div class="card-inner" style="display: flex; gap: 20px; padding: 15px; background: #E2E2E2; color: #2E2828; border-radius: 8px; margin-bottom: 20px;">
-                            <div class="card-image" style="width: 120px; height: 120px; flex-shrink: 0;">
-                                <img src="css/workspace.png" alt="Урок" style="width: 100%; height: 100%; object-fit: cover; border-radius: 4px;">
-                            </div>
-                            <div class="card-text" style="display: flex; flex-direction: column; justify-content: center;">
-                                <span style="font-size: 11px; font-family: monospace; background: #2E2828; color: #E2E2E2; padding: 2px 6px; border-radius: 3px; width: fit-content; margin-bottom: 8px;">
-                                    ${art.category || 'Grammatik'}
-                                </span>
-                                <h3 style="margin: 0 0 8px 0; font-size: 20px; font-family: sans-serif; font-weight: bold;">
-                                    ${art.title}
-                                </h3>
-                                <p style="margin: 0; font-size: 14px; line-height: 1.4; color: #4A4A4A;">
-                                    ${art.summary}
-                                </p>
-                            </div>
-                        </div>
-                    `;
-                    gridContainer.appendChild(card);
+        const isUserAuthorized = articles.length > 0 ? !articles[0].is_locked : false;
+
+        let warningBanner = document.getElementById("articles-auth-banner");
+        const isAuthFormVisible = authSection && (authSection.style.display === "block");
+        if (!isUserAuthorized && !isAuthFormVisible) {
+            if (!warningBanner) {
+                warningBanner = document.createElement("div");
+                warningBanner.id = "articles-auth-banner";
+                warningBanner.className = "auth-warning-banner";
+                warningBanner.innerHTML = `
+                    <span>Надо войти, чтобы прочитать теорию и открыть упражнения!</span>
+                    <button id="go-to-auth-btn">ВОЙТИ</button>
+                `;
+                const container = document.querySelector(".articles-container");
+                if (container) {
+                    container.insertBefore(warningBanner, container.firstChild);
+                }
+
+                document.getElementById("go-to-auth-btn")?.addEventListener("click", () => {
+                    showAuthForm();
+                    authSection.scrollIntoView({ behavior: "smooth" });
+                    warningBanner.remove();
                 });
             }
         } else {
-            console.error("Ошибка RPC статей:", articlesError);
+            if (warningBanner) warningBanner.remove();
         }
-    } catch (articleErr) {
-        console.error("Не удалось собрать каталог статей:", articleErr);
+
+        articles.forEach(art => {
+            const card = document.createElement(art.is_locked ? "div" : "a");
+            card.className = `article-card ${art.is_locked ? "locked" : ""}`;
+            
+            if (!art.is_locked) {
+                card.href = `article.html?slug=${art.slug}`;
+            }
+
+            card.innerHTML = `
+                <div class="card-inner">
+                    <div class="card-text">
+                        <span class="card-category">
+                            ${art.category || 'Grammatik'}
+                        </span>
+                        <h3 class="card-title">
+                            ${art.title}
+                        </h3>
+                        <p class="card-summary">
+                            ${art.summary}
+                        </p>
+                    </div>
+                </div>
+            `;
+
+            if (art.is_locked) {
+                card.addEventListener("click", () => {
+                    alert("Эта тема заблокирована. Пожалуйста, введите ваш Ключ доступа вверху сайта.");
+                    showAuthForm();
+                    authSection.scrollIntoView({ behavior: "smooth" });
+                });
+            }
+
+            articlesGrid.appendChild(card);
+        });
+
+    } catch (err) {
+        console.error("Не удалось собрать каталог статей:", err);
+        articlesGrid.innerHTML = "<p>Что-то пошло не так при загрузке тем.</p>";
     }
 }
 

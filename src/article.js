@@ -15,9 +15,23 @@ window.addEventListener("DOMContentLoaded", async () => {
         return;
     }
 
+    // Забираем сохраненный Ключ доступа
+    const savedKey = localStorage.getItem("user_access_key");
+
+    if (!savedKey) {
+        document.getElementById('article-title').innerText = "Доступ ограничен 🔒";
+        document.getElementById('theorie-section').innerHTML = `
+            <p style="text-align: center; margin-top: 20px;">
+                Пожалуйста, авторизуйтесь на главной странице, чтобы открыть этот урок.
+            </p>
+        `;
+        return;
+    }
+
     try {
+        // Загружаем статьи через безопасный RPC
         const { data: allArticles, error: articleError } = await supabaseClient
-            .rpc('get_public_articles');
+            .rpc('get_articles_by_key', { user_key: savedKey });
 
         if (articleError || !allArticles) {
             document.getElementById('article-title').innerText = "Ошибка загрузки данных из базы.";
@@ -31,20 +45,34 @@ window.addEventListener("DOMContentLoaded", async () => {
             return;
         }
 
+        // Рендерим заголовок и теорию
         document.getElementById('article-title').innerText = article.title;
         document.getElementById('theorie-section').innerHTML = marked.parse(article.content);
 
+        if (typeof renderMathInElement === 'function') {
+            renderMathInElement(document.getElementById('theorie-section'), {
+                delimiters: [
+                    {left: '$$', right: '$$', display: true},
+                    {left: '$', right: '$', display: false}
+                ],
+                throwOnError: false
+            });
+        }
+
+        // Загружаем упражнения через новую безопасную RPC-функцию get_article_exercises
         const { data: words, error: wordsError } = await supabaseClient
-            .from('article_words')
-            .select('word, gender, exercise_type, options')
-            .eq('article_id', article.id);
+            .rpc('get_article_exercises', { 
+                user_key: savedKey, 
+                req_article_id: article.id 
+            });
 
         if (!wordsError && words && words.length > 0) {
             currentWords = words;
-            
             document.getElementById('exercise-section').style.display = "block";
-            
             initTrainer();
+        } else {
+            // Если упражнений к этой статье нет, просто аккуратно прячем блок упражнений
+            document.getElementById('exercise-section').style.display = "none";
         }
 
     } catch (err) {
@@ -53,11 +81,41 @@ window.addEventListener("DOMContentLoaded", async () => {
 });
 
 function initTrainer() {
+    const wordDisplay = document.getElementById('word-display');
+    const buttonsContainer = document.getElementById('buttons-container');
+    const nextBtn = document.getElementById('next-btn');
+
+    nextBtn.style.display = 'none';
+
+    wordDisplay.innerHTML = '';
+    buttonsContainer.innerHTML = '';
+
     if (currentIndex >= currentWords.length) {
         showResults();
         return;
     }
+
+    const currentItem = currentWords[currentIndex];
+
+    const wordTitle = document.createElement('h4');
+    wordTitle.style.fontSize = '24px';
+    wordTitle.style.marginBottom = '20px';
+    wordTitle.innerText = currentItem.word;
+    wordDisplay.appendChild(wordTitle);
+
+    const type = currentItem.exercise_type ? currentItem.exercise_type.toLowerCase().trim() : 'articles';
+
+    if (type === 'articles') {
+        renderButtons(currentItem, buttonsContainer);
+    } else if (type === 'input') {
+        renderInput(currentItem, buttonsContainer);
+    } else if (type === 'multiple') {
+        renderMultiple(currentItem, buttonsContainer);
+    } else {
+        renderButtons(currentItem, buttonsContainer);
+    }
 }
+
 function renderButtons(item, container){
     ['der','die','das'].forEach(g => {
     const btn = document.createElement('button');

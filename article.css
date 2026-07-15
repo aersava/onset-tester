@@ -1,0 +1,129 @@
+:root {
+    --bg-dark: #2E2828;
+    --bg-light: #E2E2E2;
+    --accent-color: #c60b0b;
+    --font-accent: "Archivo Black", sans-serif;
+    --font-main: "Intel One Mono", monospace;
+}
+
+body {
+    background-color: var(--bg-light);
+    color: var(--bg-dark);
+    font-family: var(--font-main);
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    max-width: 1300px;
+    margin: 0 auto;
+    padding: 0 8%;
+}
+
+.container a {
+    margin-top: 8%;
+    text-decoration: none;
+}
+
+.back-link {
+    text-decoration: none;
+    color: var(--bg-dark);
+    font-weight: bold;
+    display: inline-block;
+    margin-bottom: 20px;
+}
+
+#article-title {
+    font-family: var(--font-accent);
+    color: var(--bg-dark);
+    font-size: 40px;
+    margin-top: 10px;
+    margin-bottom: 30px;
+}
+
+/*==================== 
+  THEORIE
+====================*/
+
+#theorie-section {
+    line-height: 1.6;
+    font-size: 16px;
+}
+
+#theorie-section h2,
+#theorie-section h3, 
+#theorie-section h4 {
+    font-family: var(--font-accent);
+    margin-top: 30px;
+    margin-bottom: 15px;
+}
+
+#theorie-section p {
+    margin-bottom: 16px;
+}
+
+#theorie-section ul, 
+#theorie-section ol {
+    padding-left: 24px;
+    margin-bottom: 20px;
+}
+
+#theorie-section blockquote {
+    border-left: 4px solid var(--accent-color);
+    background: rgba(0, 0, 0, 0.05);
+    margin: 20px 0;
+    padding: 12px 20px;
+    border-radius: 0 8px 8px 0;
+}
+
+hr {
+    margin: 40px 0;
+    border: 0;
+    border-top: 2px solid var(--bg-dark);
+}
+
+.exercise-container {
+    background: #c4bcba;
+    border: 2px solid var(--bg-dark);
+    border-radius: 12px;
+    padding: 25px;
+    box-shadow: 4px 4px 0px var(--bg-dark);
+    margin-bottom: 40px;
+}
+
+/*==================== 
+  TABLES (ТАБЛИЦЫ)
+====================*/
+
+#theorie-section table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 25px 0;
+    background-color: #c4bcba;
+    border: 2px solid var(--bg-dark);
+    box-shadow: 4px 4px 0px var(--bg-dark);
+    font-size: 14px;
+}
+
+#theorie-section th {
+    background-color: var(--bg-dark);
+    color: var(--bg-light);
+    font-family: var(--font-accent);
+    text-align: center;
+    padding: 12px 10px;
+    border: 1px solid var(--bg-dark);
+}
+
+#theorie-section td {
+    padding: 10px;
+    border: 1px solid var(--bg-dark);
+    vertical-align: top;
+    line-height: 1.5;
+}
+
+#theorie-section td.merged-cell {
+    vertical-align: middle;
+    text-align: center;
+    background-color: #c4bcba;
+    font-weight: bold;
+}

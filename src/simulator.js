@@ -1,5 +1,10 @@
 import { onsetText } from "./generator.js";
 import { navigateTo } from "./router.js";
+
+const SUPABASE_URL = "https://mxscxbnfoflmyommmvkw.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_UywRzzKorhm2e27LVhB1yg_tguBQc21";
+const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
 const timer = document.getElementById("timer_box");
 const textContainer = document.getElementById("text-container");
 const simulationPage = document.getElementById("simulations");
@@ -241,30 +246,20 @@ export function resetFilters() {
 //сохранение решенных текстов в айдишнике
 async function saveCompletedTextIds(textId) {
     const savedKey = localStorage.getItem("user_access_key");
-    if (!savedKey) return;
+    if (!savedKey || savedKey === "no_key_provided") return;
 
     try {
-        const {data: profile, error: selectError } = await supabaseClient
-        .from("access_keys")
-        .select("used_id_texts")
-        .eq("key_value", savedKey)
-        .single();
-        if (selectError) throw selectError;
+        const { error } = await supabaseClient.rpc('mark_text_as_used', {
+            user_key: savedKey,
+            text_id: String(textId)
+        });
 
-        const currentSolved = profile.used_id_texts || [];
-
-        if(!currentSolved.includes(textId)) {
-            const updatedSolved = [...currentSolved, textId];
-
-            const {error: updateError } = await supabaseClient
-            .from("access_keys")
-            .update({ used_id_texts: updatedSolved })
-            .eq("key_value", savedKey);
-
-            if (updateError) throw updateError;
-            console.log(`Текст с ID ${textId} успешно сохранен как решенный.`);
+        if (error) {
+            console.error("Ошибка сохранения прогресса в БД через RPC:", error);
+        } else {
+            console.log(`Текст с ID ${textId} успешно сохранен как пройденный.`);
         }
     } catch (error) {
-        console.error("Ошибка при сохранении решенного текста:", error);
+        console.error("Сбой сети при сохранении решенного текста:", error);
     }
 }

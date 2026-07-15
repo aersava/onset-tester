@@ -17,14 +17,22 @@
 
     <body>
         <nav class="navbar">
-            <div class="nav-links">
-                <a href="#" id="toHome">HOME</a>
-                <a href="#about-us-btn" id="toAbout" class="filterable-nav">ABOUT US</a>
-                <a href="javascript:void(0)" id="nav-simulations" class="filterable-nav">SIMULATOR</a>
-                <a href="#contacts-btn" id="contacts" class="filterable-nav">CONTACTS</a>
-                <a href="javascript:void(0)" id="nav-articles" style="display: none;">THEORIE</a>
+            <button class = "menu-toggle" id="menu-toggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+
+            <div class="nav-container" id="nav-container">
+                <div class="nav-links">
+                    <a href="#" id="toHome">HOME</a>
+                    <a href="#about-us-btn" id="toAbout" class="filterable-nav">ABOUT US</a>
+                    <a href="javascript:void(0)" id="nav-simulations" class="filterable-nav">SIMULATOR</a>
+                    <a href="#contacts-btn" id="contacts" class="filterable-nav">CONTACTS</a>
+                    <a href="javascript:void(0)" id="nav-articles">THEORIE</a>
+                </div>
+                <a href="#" id="nav-login" class="login-link">LOGIN</a>
             </div>
-            <a href="#" id="nav-login" class="login-link">LOGIN</a>
         </nav>
 
         <div
@@ -90,7 +98,7 @@
                     <div class="plus-item">
                         <img src="css/plus.png" alt="Plus 2" class="plus-image">
                         <p class="plus-description">Куча практики</p>
-                        <span class="plus-details"> Более 100 текстов для практики, охватывающих широкий спектр тем и уровней сложности</span>
+                        <span class="plus-details"> Более 200 текстов для практики, охватывающих широкий спектр тем и уровней сложности</span>
                     </div>
                     <div class="plus-item">
                         <img src="css/plus.png" alt="Plus 3" class="plus-image">
@@ -184,15 +192,18 @@
         </div>
 
         <div id="articles-page" style="display: none;">
-            <h2>Grammatik & Lexikon / Теория</h2>
-            <p style="font-family: 'Intel One Mono', monospace; margin-bottom: 30px;">
-                Выбери тему, чтобы разогреть мозг перед симулятором:
-            </p>
-            <div id="articles-grid" class="articles-grid">
-                <p>Загрузка доступных тем...</p>
+            <div class="articles-container">
+                <h2>GRAMMATIK & LEXIKON</h2>
+                <p style="font-family: 'Intel One Mono', monospace; margin-bottom: 30px; font-size: 24px; color: #2E2828;">
+                    Выбери тему, чтобы разогреть мозг перед симулятором:
+                </p>
+                <div id="articles-grid" class="articles-grid">
+                    <p>Загрузка доступных тем...</p>
+                </div>
             </div>
         </div>
 
+        
         <!-- Страница Публичной Оферты -->
         <div id="oferta-page" style="display: none; max-width: 800px; margin: 40px auto; padding: 40px; background: #FFFFFF; color: #2E2828; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); line-height: 1.6; font-family: sans-serif;">
             <button id="toHomeFromOferta" style="background: none; border: none; font-family: monospace; font-size: 14px; font-weight: bold; color: #2E2828; cursor: pointer; padding: 0; margin-bottom: 30px; text-transform: uppercase;">← На главную</button>
