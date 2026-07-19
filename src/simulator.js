@@ -15,6 +15,7 @@ export const usedTextIds = [];
 export let simulatorTexts = [];
 
 export let selectedLevel = "all";
+export let selectedLanguage = "de";
 export let totalScore = 0;
 export let totalGaps = 0;
 export let completedTexts = 0;
@@ -91,8 +92,10 @@ export function startTimer(durationInSek) {
 
 export function beginSimulation() {
     const levelSelect = document.getElementById("filter-level");
+    const langSelect = document.getElementById("filter-language");
 
     if (levelSelect) selectedLevel = levelSelect.value;
+    if (langSelect) selectedLanguage = langSelect.value;
 
     navigateTo('simulations');
 
@@ -117,12 +120,14 @@ export function loadNextText() {
 
     let filtered = simulatorTexts.filter((text) => {
         const hasAccess = savedKey || text.is_free;
+
         
         // Сортировка по уровеню
         const matchesLevel = selectedLevel === "all" || 
             (text.level && text.level.trim().toUpperCase() === selectedLevel.trim().toUpperCase());
-            
-        return hasAccess && matchesLevel;
+
+        const matchesLanguage = text.lang && text.lang.trim().toLowerCase() === selectedLanguage.trim().toLowerCase();
+        return hasAccess && matchesLevel && matchesLanguage;
     });
 
     const maxTextsInTest = Math.min(8, filtered.length);
@@ -143,9 +148,10 @@ export function loadNextText() {
 
     // Если текстов под выбранные настройки вообще нет в базе
     if (newTexts.length === 0) {
+        const langName = selectedLanguage === "de" ? "Немецкий" : "Английский";
         textContainer.innerHTML = `
             <div style="text-align: center; padding: 30px; font-family: var(--font-main);">
-                <p>Текстов уровня (${selectedLevel}) не найдено.</p>
+                <p>Текстов уровня (${selectedLevel}) для языка [${langName}] не найдено.</p>
             </div>`;
         return;
     }
@@ -161,6 +167,7 @@ export function loadNextText() {
     const mainHeader = simulationPage.querySelector("h2");
     if (mainHeader) {
         const currentLevel = data.level ? data.level.toUpperCase() : "A2"; 
+        const currentLang = data.lang ? data.lang.toUpperCase() : "DE";
 
         mainHeader.innerHTML = `Lückentexts <span style="font-size: 14px; font-family: var(--font-main); background: var(--bg-dark); color: var(--bg-light); padding: 4px 10px; margin-left: 15px; vertical-align: middle; border-radius: 3px; letter-spacing: 1px;"> ${currentLevel}</span>`;
     }
@@ -241,6 +248,7 @@ nextBtn?.addEventListener("click", handleNextButtonClick);
 
 export function resetFilters() {
     selectedLevel = "all";
+    selectedLanguage = "de";
 }
 
 //сохранение решенных текстов в айдишнике
