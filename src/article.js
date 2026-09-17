@@ -15,21 +15,9 @@ window.addEventListener("DOMContentLoaded", async () => {
         return;
     }
 
-    // Забираем сохраненный Ключ доступа
-    const savedKey = localStorage.getItem("user_access_key");
-
-    if (!savedKey) {
-        document.getElementById('article-title').innerText = "Доступ ограничен 🔒";
-        document.getElementById('theorie-section').innerHTML = `
-            <p style="text-align: center; margin-top: 20px;">
-                Пожалуйста, авторизуйтесь на главной странице, чтобы открыть этот урок.
-            </p>
-        `;
-        return;
-    }
+    const savedKey = localStorage.getItem("user_access_key") || "no_key_provided";
 
     try {
-        // Загружаем статьи через безопасный RPC
         const { data: allArticles, error: articleError } = await supabaseClient
             .rpc('get_articles_by_key', { user_key: savedKey });
 
@@ -41,11 +29,15 @@ window.addEventListener("DOMContentLoaded", async () => {
         const article = allArticles.find(art => art.slug === articleSlug);
 
         if (!article) {
-            document.getElementById('article-title').innerText = "Ошибка: статья не найдена в базе.";
+            document.getElementById('article-title').innerText = "Доступ ограничен 🔒";
+            document.getElementById('theorie-section').innerHTML = `
+                <p style="text-align: center; margin-top: 20px;">
+                    Пожалуйста, авторизуйтесь на главной странице, чтобы открыть этот урок.
+                </p>
+            `;
             return;
         }
 
-        // Рендерим заголовок и теорию
         document.getElementById('article-title').innerText = article.title;
         document.getElementById('theorie-section').innerHTML = marked.parse(article.content);
 

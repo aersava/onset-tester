@@ -7,8 +7,7 @@
         <link rel="stylesheet" href="https://cloudflare.com">
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link rel="preconnect" href="https://fonts.googleapis.com">
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Rubik+Mono+One&display=swap" rel="stylesheet">
         <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Intel+One+Mono:ital,wght@0,300..700;1,300..700&display=swap" rel="stylesheet">
         
         <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -16,8 +15,9 @@
     </head>
 
     <body>
+        
         <nav class="navbar">
-            <button class = "menu-toggle" id="menu-toggle">
+            <button class="menu-toggle" id="menu-toggle">
                 <span></span>
                 <span></span>
                 <span></span>
@@ -30,28 +30,79 @@
                     <a href="javascript:void(0)" id="nav-simulations" class="filterable-nav">SIMULATOR</a>
                     <a href="#contacts-btn" id="contacts" class="filterable-nav">CONTACTS</a>
                     <a href="javascript:void(0)" id="nav-articles">THEORIE</a>
+                    <a href="javascript:void(0)" id="nav-stats-btn" class="filterable-nav">STATISTICS</a>
+
+                    <div class="switcher-language">
+                        <button type="button" class="lang-btn" data-lang="de">DE</button>
+                        <span>|</span>
+                        <button type="button" class="lang-btn" data-lang="ru">RU</button>
+                    </div>
                 </div>
-                <a href="#" id="nav-login" class="login-link">LOGIN</a>
             </div>
+
+            <a href="javascript:void(0)" id="nav-login" class="login-link">LOGIN</a>
         </nav>
 
-        <div
-                id="auth-section"
-                style="display: none; background: #2E2828; color: #E2E2E2; padding: 15px; text-align: center; font-size: 18px;"
-            >
-                <span>Введи свой индивидуальный ключ для доступа ко всем тренажёрам: </span>
-                <input
-                    type="text"
-                    id="access-key-input"
-                    style="padding: 5px; font-size: 16px; border-radius: 5px; border: none; margin: 0 10px;"
-                >
-                <button
-                    id="login-submit-btn"
-                    style="background: #E2E2E2; color: #2E2828; padding: 5px 15px; font-size: 16px;"
-                >
-                    Отправить
+
+        <div id="auth-page" style="display: none;">
+            <div class="auth-modal-card">
+                <h2 id="auth-title" class="auth-main-title"> Начнем? </h2>
+
+                <div class="demo-badge-banner">
+                    <strong>Demo-Zugang:</strong> Du kannst den Simulator auch ohne Login kostenlos testen!
+                </div>
+                
+                <button type="button" id="google-login-btn" class="btn-google-auth">
+                    <svg class="google-svg-icon" viewBox="0 0 24 24" width="20" height="20">
+                        <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.66-5.17 3.66-9.17z"/>
+                        <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.25v3.15C3.26 21.36 7.33 24 12 24z"/>
+                        <path fill="#FBBC05" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.25C.45 8.18 0 10.01 0 12s.45 3.82 1.25 5.42l4.03-3.15z"/>
+                        <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.33 0 3.26 2.64 1.25 6.58l4.03 3.15c.95-2.83 3.6-4.98 6.72-4.98z"/>
+                    </svg>
+                    Продолжить через Google
                 </button>
+
+                <div class="auth-divider-line">
+                    <span>или</span>
+                </div>
+                <form id="auth-email-form" onsubmit="return false;">
+                    <div class="auth-input-group">
+                        <label for="email-input">Email</label>
+                        <input type="email" id="auth-email" placeholder="ktoto@gmail.com" required autocomplete="email">
+                    </div>
+
+                    <div class="auth-input-group">
+                        <label for="auth-password">Passwort</label>
+                        <input type="password" id="auth-password" placeholder="Минимум 6 символов" required autocomplete="current-password">
+                    </div>
+
+                    <button type="submit" id="auth-action-submit-btn" class="btn-auth-submit">
+                        ЗАРЕГИСТРИРОВАТЬСЯ
+                    </button>
+
+                    <div class="auth-divider-line">
+                        <span>или</span>
+                    </div>
+
+                    <div class="auth-key-section">
+                        <div class="auth-input-group">
+                            <input type="text" id="manual-access-key-input" placeholder="Schlüssel eingeben (z. B. LT-2026)" autocomplete="off">
+                        </div>
+                        <button type="button" id="submit-access-key-btn" class="btn-auth-secondary">
+                            SCHLÜSSEL AKTIVIEREN
+                        </button>
+                    </div>
+                </form>
+
+                <div class="auth-footer-links">
+                    <a href="javascript:void(0)" id="toggle-forgot-password" class="auth-link-secondary">Забыли пароль?</a>
+                    <div class="auth-switch-box">
+                        <span id="auth-switch-prompt">Уже есть аккаунт?</span>
+                        <a href="javascript:void(0)" id="toggle-auth-mode-btn" class="auth-link-primary">Войти</a>
+                    </div>
+                </div>
             </div>
+        </div>
 
         <div id="homepage">
             <header class="hero-section">
@@ -107,13 +158,6 @@
                     </div>
             </section>
 
-            <hr class="solid">
-
-            <section class="contacts-section" id="contacts-btn">
-                <h3>LÜCKENTRAUM</h3>
-                <a class="btn_telegram_share" href="https://web.telegram.org/k/#@onset_prep"></a>
-
-            </section>
         </div>
 
         
@@ -122,18 +166,19 @@
             <h2>Anleitung</h2>
 
             <div class="setting-item">
-                    <label for="filter-language">Язык</label>
+                    <label for="filter-language">Sprache</label>
                     <select id="filter-language">
-                        <option value="de">Немецкий</option>
-                        <option value="en">Английский</option>
+                        <option value="de">Deutsch</option>
+                        <option value="ru">Русский</option>
+                        <option value="en">Englisch</option>
                     </select>
                 </div>
 
             <div class ="session-setting-bar" id="filtered-container">
                 <div class="setting-item">
-                    <label for="filter-level">Niveau/Уровень</label>
+                    <label for="filter-level">Niveau</label>
                     <select id="filter-level">
-                        <option value="all">Alle Niveaus/Все уровни</option>
+                        <option value="all">Alle Niveaus</option>
                         <option value="A2">A2</option>
                         <option value="B1">B1</option>
                         <option value="B2">B2</option>
@@ -166,19 +211,6 @@
                     Klicken Sie nun auf "Test starten", um den ersten Text zu bearbeiten.
                 </section>
 
-                <section class="instruction">
-                    <strong>Примечания к тестированию</strong><br><br>
-                    Пожалуйста, прочтите внимательно и спокойно. Таймер, время ещё не идёт.<br>
-                    В следующих 8 текстах отсутствует одна или несколько букв в некоторых словах. Допишите пропуски по
-                    смыслу. На каждый текст максимум 5 минут (300 секунд).<br>
-                    Используйте немецкую или английскую раскладку клавиатуры. Если нужны немецкие буквы ä ö ü ß, просто
-                    нажмите на нужную клавишу.<br>
-                    По истечении 5 минут вы будете автоматически переключены на следующий текст. Отсчёт последних 60
-                    секунд будет показан на экране.<br>
-                    Если вы закончили заполнение раньше, нажмите на кнопку "Weiter", затем на "Zum nächsten Text".<br>
-                    <br>
-                    Чтобы начать тестирование, нажмите на кнопку "Test starten".
-                </section>
             </div>
 
             <button style="margin-bottom: 20px" id="start-simulation-btn">Test starten</button>
@@ -253,10 +285,48 @@
                 <li style="margin-bottom: 8px;"><strong>5.2.</strong> Исполнитель не несет ответственности за временные технические сбои в работе хостинга или сторонних баз данных.</li>
             </ul>
         </div>
-        <script type="module" src="/src/main.js"></script>
+        
+        <footer class="site-footer" id="contacts-btn">
+            <div class="footer-container">
+                <div class="footer-col">
+                    <h3 class="footer-logo">LÜCKENTRAUM</h3>
+                    <p class="footer-desc">Interaktiver C-Test-Simulator zur gezielten Vorbereitung auf den onSET-Sprachtest.</p>
+                </div>
 
-        <footer  style="text-align: center; padding: 20px; font-family: monospace; font-size: 12px;">
-            © 2026 LückenTraum. Все права защищены. <a href="#" id="open-oferta-btn" style="color: inherit; text-decoration: underline;">Публичная оферта</a>
+                <div class="footer-col">
+                    <span class="footer-heading">Navigation</span>
+                    <ul class="footer-nav-list">
+                        <li><a href="#" id="footToHome">Home</a></li>
+                        <li><a href="javascript:void(0)" id="footToSim">Simulator</a></li>
+                        <li><a href="javascript:void(0)" id="footToTheory">Theorie</a></li>
+                        <li><a href="#about-us-btn">Über uns</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-col">
+                    <span class="footer-heading">Kontakt</span>
+                    <ul class="footer-nav-list">
+                        <li><a href="https://t.me/onset_prep" target="_blank" rel="noopener">Telegram Kanal</a></li>
+                        <li><a href="https://github.com/aersava/onset-tester" target="_blank" rel="noopener">GitHub Project</a></li>
+                        <li><a href="mailto:shahhhmanova@gmail.com">E-Mail Support</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="footer-bottom-row">
+                <span>© 2026 LückenTraum. Alle Rechte vorbehalten.</span>
+                <a href="#" id="open-oferta-btn">Rechtliche Hinweise / Оферта</a>
+            </div>
         </footer>
+        <div id="stats-popup" class="stats-card hidden">
+            <div class="stats-card-header">
+                <h4>STATISTICS</h4>
+                <button id="close-stats-btn" type="button">&times;</button>
+            </div>
+            <div id="stats-card-body">
+                <p id="stats-text">Loading...</p>
+            </div>
+        </div>
+        <script type="module" src="/src/main.js"></script>
     </body>
 </html>

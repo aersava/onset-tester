@@ -1,4 +1,6 @@
 import './security.js';
+import { getStartSummary } from './simulator.js';
+import { initI18n, setLanguage } from '../i18n.js';
 import {initRouter, navigateTo} from './router.js';
 import {
     beginSimulation,
@@ -30,12 +32,26 @@ const nextBtn = document.getElementById("check-btn");
 
 const timer = document.getElementById("timer_box");
 
-const authSection = document.getElementById("auth-section");
-const login = document.getElementById("login-submit-btn");
-const keyInput = document.getElementById("access-key-input");
+const authPage = document.getElementById("auth-page");
+const authTitle = document.getElementById("auth-title");
+const authSubtitle = document.getElementById("auth-subtitle");
+const authEmailInput = document.getElementById("auth-email");
+const authPasswordInput = document.getElementById("auth-password");
+const authSubmitBtn = document.getElementById("auth-action-submit-btn");
+const toggleAuthModeBtn = document.getElementById("toggle-auth-mode-btn");
+const authSwitchPrompt = document.getElementById("auth-switch-prompt");
+const forgotPasswordBtn = document.getElementById("toggle-forgot-password");
+const googleLoginBtn = document.getElementById("google-login-btn");
+
+let authMode = "signup";
 
 const instructionsPage = document.getElementById("instructions-page");
 const realStartBtn = document.getElementById("start-simulation-btn");
+
+const statsBtn = document.getElementById("nav-stats-btn");
+const statsPopup = document.getElementById("stats-popup");
+const statsBody = document.getElementById("stats-card-body");
+const closeStatsBtn = document.getElementById("close-stats-btn");
 
 
 const timerCheckBox = document.getElementById("timer-toggle-checkbox");
@@ -46,13 +62,34 @@ startBtn.addEventListener("click", () => navigateTo('instructions'));
 navSimBtn.addEventListener("click", () => navigateTo('instructions'));
 homeBtn.addEventListener("click", () => navigateTo('homepage'));
 realStartBtn.addEventListener("click", beginSimulation);
-login.addEventListener("click", handleLogin);
+
+document.getElementById('footToHome')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    navigateTo('homepage');
+});
+document.getElementById('footToSim')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    navigateTo('instructions');
+});
+document.getElementById('footToTheory')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    navigateTo('articlespage');
+});
+
 document.getElementById("toHomeFromOferta")?.addEventListener("click", () => {
     navigateTo('homepage');
 });
 document.getElementById("open-oferta-btn")?.addEventListener("click", (e) => {
     e.preventDefault();
     navigateTo('ofertapage');
+});
+
+document.querySelectorAll(".lang-btn").forEach(btn => {
+    btn.addEventListener("click", (e) => {
+        e.preventDefault();
+        const lang = btn.dataset.lang;
+        setLanguage(lang);
+    });
 });
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -75,91 +112,121 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 });
 
-navLoginBtn.addEventListener("click", (e) => {
+document.getElementById('submit-access-key-btn')?.addEventListener('click', async () => {
+    const keyInput = document.getElementById('manual-access-key-input')?.value.trim();
+    if (!keyInput) {
+        return alert("Bitte gib deinen Zugangsschlüssel ein!");
+    }
+
+    // Сохраняем ключ
+    localStorage.setItem("user_access_key", keyInput);
+    
+    // Перезагружаем контент из Supabase
+    await loadAllContent();
+    
+    alert("Schlüssel erfolgreich aktiviert!");
+    navigateTo('instructions');
+});
+
+//рега и логин
+navLoginBtn?.addEventListener("click", async (e) => {
     e.preventDefault();
 
-    const isAuthorised = localStorage.getItem("user_access_key");
-    if (isAuthorised) {
-        if (confirm("Вы уже авторизованы. Хотите выйти?")) {
-            localStorage.removeItem("user_access_key");
-            alert("Вы вышли из аккаунта.");
+    const { data: { session } } = await supabaseClient.auth.getSession();
+    
+    if (session) {
+        if (confirm("Möchtest du dich wirklich abmelden?")) {
+            await supabaseClient.auth.signOut();
+            alert("Erfolgreich abgemeldet.");
             window.location.reload();
         }
     } else {
-        if (authSection.style.display === "none" || authSection.style.display === "") {
-            showAuthForm();
-            keyInput.focus();
-        } else {
-            hideAuthForm();
-        }
+        navigateTo('authpage');
     }
 });
 
+toggleAuthModeBtn?.addEventListener("click", (e) => {
+    e.preventDefault();
 
-async function checkCurrentAccess() {
-const savedKey = localStorage.getItem("user_access_key");
-    if (savedKey) {
-        const hasAccess = await verifyKeyInDatabase(savedKey);
-        if (hasAccess) {
-            isPremium = true;
-            hideAuthForm();
-            if (navLoginBtn) {
-                navLoginBtn.innerText = "LOGOUT";
-            }
-            updateSortingVisibility();
-            return true;
-        }
-    }
-    isPremium = false;
-    showAuthForm();
-    updateSortingVisibility();
-    return false;
-}
-
-async function verifyKeyInDatabase(key) {
-    if (!key || key === "null" || key === undefined) {
-        return false;
-    }
-    try {
-        const { data, error } = await supabaseClient.rpc('get_simulator_texts', { 
-            user_key: key
-        });
-
-        if (error) return false;
-        const hasPremium = data.some(t => !t.is_free);
-        return hasPremium;
-    } catch (err) {
-        return false;
-    }
-}
-
-async function handleLogin() {
-    const enteredKey = keyInput.value.trim();
-    if (!enteredKey) {
-        return alert("Введите ключ!");
-    }
-
-    const isValid = await verifyKeyInDatabase(enteredKey);
-
-    if (isValid) {
-        localStorage.setItem("user_access_key", enteredKey);
-        alert("Доступ открыт 🎉");
-        isPremium = true;
-        hideAuthForm();
-        updateSortingVisibility();
-        await loadAllContent();
+    if (authMode === "signup") {
+        authMode = "login";
+        if (authTitle) authTitle.innerText = "ВХОД";
+        if (authSubmitBtn) authSubmitBtn.innerText = "ВОЙТИ";
+        if (authSwitchPrompt) authSwitchPrompt.innerText = "Нет аккаунта?";
+        toggleAuthModeBtn.innerText = "Зарегистрироваться";
+        if (forgotPasswordBtn) forgotPasswordBtn.style.display = "inline-block";
     } else {
-        alert("Ключ не найден или неактивен. Напиши мне в Telegram!");
+        authMode = "signup";
+        if (authTitle) authTitle.innerText = "НАЧНЕМ?";
+        if (authSubmitBtn) authSubmitBtn.innerText = "ЗАРЕГИСТРИРОВАТЬСЯ";
+        if (authSwitchPrompt) authSwitchPrompt.innerText = "Уже есть аккаунт?";
+        toggleAuthModeBtn.innerText = "Войти";
+        if (forgotPasswordBtn) forgotPasswordBtn.style.display = "none";
     }
-}
+});
 
-function showAuthForm() {
-    if (authSection) authSection.style.display = "block";
-}
+authSubmitBtn?.addEventListener("click", async (e) => {
+    e.preventDefault();
+    const email = authEmailInput?.value.trim();
+    const password = authPasswordInput?.value.trim();
 
-function hideAuthForm() {
-    if (authSection) authSection.style.display = "none";
-}
+    if (!email || !password) {
+        return alert("Bitte gib E-Mail und Passwort ein!");
+    }
+    if (password.length < 6) {
+        return alert("Das Passwort muss mindestens 6 Zeichen lang sein!");
+    }
+
+    authSubmitBtn.disabled = true;
+    authSubmitBtn.innerText = "BITTE WARTEN...";
+
+    try {
+        if (authMode === "signup") {
+            const { error } = await supabaseClient.auth.signUp({ email, password });
+            if (error) throw error;
+            alert("Registrierung erfolgreich! Bitte prüfe ggf. dein Postfach 📩");
+            navigateTo('homepage');
+        } else {
+            const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
+            if (error) throw error;
+            alert("Erfolgreich angemeldet!");
+            navigateTo('homepage');
+        }
+    } catch (err) {
+        alert("Fehler: " + (err.message || "Etwas ist schiefgelaufen"));
+    } finally {
+        authSubmitBtn.disabled = false;
+        authSubmitBtn.innerText = authMode === "signup" ? "ЗАРЕГИСТРИРОВАТЬСЯ" : "ВОЙТИ";
+    }
+});
+
+googleLoginBtn?.addEventListener("click", async () => {
+    const { error } = await supabaseClient.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+            redirectTo: window.location.origin + window.location.pathname
+        }
+    });
+    if (error) {
+        alert("Fehler beim Google-Login: " + error.message);
+    }
+});
+
+forgotPasswordBtn?.addEventListener("click", async () => {
+    const email = authEmailInput?.value.trim();
+    if (!email) {
+        return alert("Gib bitte zuerst deine E-Mail-Adresse im Feld oben ein.");
+    }
+    const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
+        redirectTo: window.location.origin + window.location.pathname
+    });
+    if (error) {
+        alert("Fehler: " + error.message);
+    } else {
+        alert("Ein Link zum Zurücksetzen des Passworts wurde gesendet!");
+    }
+});
+
 
 //ЗАГРУЗКА ИЗ БАЗЫ ДАННЫХ
 async function loadAllContent() {
@@ -207,8 +274,7 @@ async function loadArticlesGrid() {
         const isUserAuthorized = articles.length > 0 ? !articles[0].is_locked : false;
 
         let warningBanner = document.getElementById("articles-auth-banner");
-        const isAuthFormVisible = authSection && (authSection.style.display === "block");
-        if (!isUserAuthorized && !isAuthFormVisible) {
+        if (!isUserAuthorized) {
             if (!warningBanner) {
                 warningBanner = document.createElement("div");
                 warningBanner.id = "articles-auth-banner";
@@ -223,9 +289,7 @@ async function loadArticlesGrid() {
                 }
 
                 document.getElementById("go-to-auth-btn")?.addEventListener("click", () => {
-                    showAuthForm();
-                    authSection.scrollIntoView({ behavior: "smooth" });
-                    warningBanner.remove();
+                    navigateTo('authpage');
                 });
             }
         } else {
@@ -258,9 +322,8 @@ async function loadArticlesGrid() {
 
             if (art.is_locked) {
                 card.addEventListener("click", () => {
-                    alert("Эта тема заблокирована. Пожалуйста, введите ваш Ключ доступа вверху сайта.");
-                    showAuthForm();
-                    authSection.scrollIntoView({ behavior: "smooth" });
+                    alert("Эта тема заблокирована. Пожалуйста, войдите в аккаунт или проверьте подписки.");
+                    navigateTo('authpage');
                 });
             }
 
@@ -293,14 +356,60 @@ window.addEventListener("DOMContentLoaded", async () => {
         simulations: simulationPage,
         instructions: instructionsPage,
         articlespage: articlesPage,
-        ofertapage: ofertaPage
+        ofertapage: ofertaPage,
+        authpage: authPage
     });
-    if (window.location.hash === '#articlespage') {
-        hideAuthForm();
-        navigateTo('articlespage');
+    supabaseClient.auth.onAuthStateChange(async (event, session) => {
+        if (session && session.user) {
+            isPremium = true;
+            if (navLoginBtn) navLoginBtn.innerText = "LOGOUT";
+        } else {
+            isPremium = false;
+            if (navLoginBtn) navLoginBtn.innerText = "LOGIN";
+        }
+        updateSortingVisibility();
+        await loadAllContent();
+    });
+
+    const hashPage = window.location.hash.replace('#', '');
+    if (hashPage && ['articlespage', 'instructions', 'simulations', 'ofertapage', 'authpage'].includes(hashPage)) {
+        navigateTo(hashPage);
     } else {
-        await checkCurrentAccess();
+        navigateTo('homepage');
     }
-    await loadAllContent();
+});
+
+statsBtn?.addEventListener("click", async () => {
+    statsPopup.classList.toggle("hidden");
+    if (statsPopup.classList.contains("hidden")) return;
+
+    statsBody.innerHTML = "<p>Загрузка...</p>";
+    const stats = await getStartSummary();
+
+    if (!stats) {
+        statsBody.innerHTML = "<p>Нет решенных тестов или ключ не активирован.</p>";
+        return;
+    }
+
+    const formatSec = (s) => s ? `${Math.floor(s / 60)}м ${s % 60}с` : '—';
+
+    statsBody.innerHTML = `
+        <div style="margin-bottom: 12px;">
+            <div style="font-size: 11px; opacity: 0.7;">ПОСЛЕДНИЙ ТЕСТ</div>
+            <div style="font-size: 18px; font-weight: bold;">${stats.latest.score} баллов (${formatSec(stats.latest.time)})</div>
+        </div>
+        <div style="margin-bottom: 12px;">
+            <div style="font-size: 11px; opacity: 0.7;">ВЧЕРА</div>
+            <div style="font-size: 15px;">${stats.gestern.count > 0 ? `${stats.gestern.count} тестов • ср. ${stats.gestern.avgScore}` : 'Нет попыток'}</div>
+        </div>
+        <div>
+            <div style="font-size: 11px; opacity: 0.7;">ЗА 7 ДНЕЙ</div>
+            <div style="font-size: 15px;">${stats.woche.count} тестов • ср. ${stats.woche.avgScore}</div>
+        </div>
+    `;
+});
+
+closeStatsBtn?.addEventListener("click", () => {
+    statsPopup.classList.add("hidden");
 });
 

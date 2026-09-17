@@ -24,6 +24,7 @@ export let timerEnabled = true;
 let countdownInterval;
 let lastActiveInput = null;
 let checked = false;
+let textStartTime = null;
 
 
 document.addEventListener("focusin", (e) => {
@@ -172,6 +173,8 @@ export function loadNextText() {
         mainHeader.innerHTML = `Lückentexts <span style="font-size: 14px; font-family: var(--font-main); background: var(--bg-dark); color: var(--bg-light); padding: 4px 10px; margin-left: 15px; vertical-align: middle; border-radius: 3px; letter-spacing: 1px;"> ${currentLevel}</span>`;
     }
     textContainer.innerHTML = renderedText;
+
+    textStartTime = Date.now();
         
     startTimer(300);
 }
@@ -192,36 +195,76 @@ function handleNextButtonClick() {
     const inputs = textContainer.querySelectorAll(".test-input");
     let correct = 0;
     for (const input of inputs) {
-        const userAnswer = input.value.trim().toLowerCase();
-        const correctAnswer = input.getAttribute("data-answer").trim().toLowerCase();
-        if (userAnswer === correctAnswer) {
-            input.style.backgroundColor = "#d4edda";
-            input.style.borderColor = "#28a745";
-            ++correct;
-        } else {
-            input.style.backgroundColor = "#f8d7da";
-            input.style.borderColor = "#dc3545";
-        }
-        input.disabled = true;
+    const userAnswer = input.value.trim().toLowerCase();
+    const correctAnswer = input.getAttribute("data-answer") ? input.getAttribute("data-answer").trim().toLowerCase() : "";
+
+    if (userAnswer === correctAnswer) {
+        // Ответ верный — подсвечиваем зелёным
+        input.style.backgroundColor = "#d4edda";
+        input.style.borderColor = "#28a745";
+        ++correct;
+    } else {
+        // Ответ неверный — подсвечиваем красным
+        input.style.backgroundColor = "#f8d7da";
+        input.style.borderColor = "#dc3545";
+
+        // --- СОЗДАЁМ И ВСТАВЛЯЕМ ПОДСКАЗКУ С ПРАВИЛЬНЫМ ОТВЕТОМ ---
+        const answerHint = document.createElement("span");
+        answerHint.className = "correct-answer-hint";
+        answerHint.innerText = ` ${correctAnswer}`;
+        
+        // Вставляем подсказку сразу после поля ввода
+        input.insertAdjacentElement("afterend", answerHint);
     }
+    
+    input.disabled = true;
+}
     totalScore += correct;
     totalGaps += inputs.length;
     ++completedTexts;
     clearInterval(countdownInterval);
     nextBtn.innerText = "Zum nächsten Text";
     checked = true;
+
+    const timeSpent = textStartTime ? Math.min(300, Math.round((Date.now() - textStartTime) / 1000)) : null;
+
+    if(currentTextId){
+        saveCompletedTextIds(currentTextId);
+        if(currentTextId){
+            saveCompletedTextIds(currentTextId);
+            saveTextResult(currentTextId, correct, timeSpent);
+        }
+    }
 }
 
+function levelShow() {
+    if (totalScore <= 46) {
+        return "Ваш уровень: A1";
+    }
+    else if (totalScore <= 73 && totalScore > 46) {
+        return "Ваш уровень: A2";
+    }
+    else if (totalScore <= 105 && totalScore > 73) {
+        return "Ваш уровень: B1";
+    }
+    else if (totalScore <= 134 && totalScore > 105) {
+        return "Ваш уровень: B2";
+    } 
+    else if (totalScore <= 160 && totalScore > 134) {
+        return "Ваш уровень: C1";
+    }
+}
 function finalizeResult(maxTexts) {
     clearInterval(countdownInterval);
     timer.classList.remove("visible");
     const percent = totalGaps > 0 ? Math.round((totalScore / totalGaps) * 100) : 0;
     textContainer.innerHTML = `
     <div style="text-align: center; padding: 30px; background: #E2E2E2; color: #2E2828; border-radius: 10px; margin-top: 20px;">
-        <h2>Ergebnis / Результат</h2>
+        <h2>Ergebnis</h2>
         <p style="font-size: 24px;">Вы успешно завершили ${completedTexts} из ${maxTexts} текстов!</p>
         <p style="font-size: 28px; font-weight: bold; margin: 20px 0;">
             Баллы: ${totalScore} из ${totalGaps} (${percent}%)
+            Ваш уровень: ${levelShow()}
         </p>
         <button id="restart-session-btn" style="background: #2E2828; color: #E2E2E2; font-size: 22px; padding: 10px 30px; margin-top: 15px;">Еще</button>
     </div>
@@ -250,24 +293,87 @@ export function resetFilters() {
     selectedLevel = "all";
     selectedLanguage = "de";
 }
-
-//сохранение решенных текстов в айдишнике
 async function saveCompletedTextIds(textId) {
     const savedKey = localStorage.getItem("user_access_key");
     if (!savedKey || savedKey === "no_key_provided") return;
 
     try {
-        const { error } = await supabaseClient.rpc('mark_text_as_used', {
+        const {error} = await supabaseClient.rpc("mark_text_as_used", {
             user_key: savedKey,
             text_id: String(textId)
         });
-
-        if (error) {
-            console.error("Ошибка сохранения прогресса в БД через RPC:", error);
+        if(error) {
+            console.error("Ошибка при сохранении использованного текста rpc:", error);
         } else {
-            console.log(`Текст с ID ${textId} успешно сохранен как пройденный.`);
+            console.log("Использованный текст успешно сохранён в базе данных.");
         }
     } catch (error) {
-        console.error("Сбой сети при сохранении решенного текста:", error);
+        console.error("Ошибка при сохранении использованного текста:", error);
     }
+}
+
+async function saveTextResult(textId, score, timeSeconds) {
+    const savedKey = localStorage.getItem("user_access_key");
+    if (!savedKey || savedKey === "no_key_provided") return;
+    
+    try {
+        const { error } = await supabaseClient.from("text_results").insert([
+            {
+                access_key: savedKey,
+                user_id: null,
+                text_id: String(textId),
+                score_int: score,
+                time_seconds: timeSeconds
+            }
+        ]);
+
+        if (error) {
+            console.error("Ошибка при сохранении результата текста:", error);
+        } else {
+            console.log("Результат текста успешно сохранён в базе данных.");
+        }
+    } catch (error) {
+        console.error("Ошибка сети, все сломалось, почини меня Нолик:", error);
+    }
+}
+
+export async function getStartSummary() {
+    const savedKey = localStorage.getItem("user_access_key");
+    if (!savedKey || savedKey === "no_key_provided") return null;
+
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+
+    try {
+        const { data, error } = await supabaseClient
+            .from("text_results")
+            .select("score_int, time_seconds, created_at")
+            .eq("access_key", savedKey)
+            .gte("created_at", sevenDaysAgo.toISOString())
+            .order("created_at", { ascending: false });
+
+        if (error|| !data|| data.length === 0) return null;
+        const latest = data[0];
+
+        const gestern = new Date();
+        gestern.setDate(gestern.getDate() - 1);
+        const gesternStr = gestern.toISOString().slice(0, 10);
+
+        const gesternItems = data.filter( d => d.created_at.slice(0, 10) === gesternStr);
+        const gesternAvg = gesternItems.length 
+        ? Math.round(gesternItems.reduce((acc, cur) => acc + cur.score_int, 0) / gesternItems.length)
+        : null;
+
+        const wocheAvg = Math.round(data.reduce((acc, cur) => acc + cur.score_int, 0) / data.length);
+
+        return {
+            latest: {score: latest.score_int, time: latest.time_seconds},
+            gestern: {count: gesternItems.length, avgScore: gesternAvg},
+            woche: {count: data.length, avgScore: wocheAvg},
+        };
+    } catch (err) {
+        console.error("Ошибка при получении статистики:", err);
+        return null;
+    }
+    
 }

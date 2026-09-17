@@ -4,6 +4,7 @@
     --accent-color: #c60b0b;
     --font-accent: "Archivo Black", sans-serif;
     --font-main: "Intel One Mono", monospace;
+    --font-main-ru: "Rubik Mono One", sans-serif;
 }
 /*====================
 тут чет про грамматику что ли...
@@ -105,10 +106,6 @@ h2 {
     padding: 30px 0 20px;
 }
 
-hr.solid {
-    border-top: 2px solid #2e2828a5;
-}
-
 body {
     user-select: none;
     font-family: var(--font-main);
@@ -171,10 +168,38 @@ body {
 }
 .navbar {
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    background: var(--bg-light);
-    padding: 20px 8%;
+    justify-content: space-between;
+    position: relative;
+    padding: 10px 20px;
+}
+.switcher-language {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--font-main);
+    font-size: 18px;
+    font-weight: 700;
+}
+.switcher-language button.lang-btn {
+    border: none !important;
+    background: transparent !important;
+    padding: 2px 4px !important;
+    font-family: inherit;
+    font-size: inherit;
+    font-weight: inherit;
+    color: var(--bg-dark);
+    cursor: pointer;
+    line-height: 1;
+}
+
+.switcher-language button.lang-btn:hover {
+    box-shadow: none !important;
+    opacity: 0.6;
+}
+
+.switcher-language button.lang-btn.active {
+    text-decoration: underline;
 }
 
 .navbar a, .login-link {
@@ -196,6 +221,7 @@ body {
 html{
     scroll-behavior: smooth;
 }
+
 
 .hero-section {
     min-height: 80vh;
@@ -512,8 +538,327 @@ PLUSES SECTION
 
     outline: none;
 }
+.correct-answer-hint {
+    color: #2b8340;
+    font-weight: bold;
+    margin-left: 4px;
+    margin-right: 8px;
+    font-size: 0.9em;
+}
+
+/*====================
+СТРАНИЦА АВТОРИЗАЦИИ
+====================*/
+.demo-badge-banner {
+    background: #e6f4ea;
+    color: #137333;
+    border: 1px solid #ceead6;
+    border-radius: 6px;
+    padding: 10px 14px;
+    font-size: 13px;
+    margin-bottom: 20px;
+    line-height: 1.4;
+    text-align: left;
+}
+
+.auth-key-section {
+    margin-top: 10px;
+}
+
+.btn-auth-secondary {
+    width: 100%;
+    background: transparent;
+    color: var(--bg-dark);
+    border: 2px solid var(--bg-dark);
+    border-radius: 6px;
+    padding: 10px;
+    font-family: var(--font-accent);
+    font-size: 14px;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    transition: background-color 0.2s, color 0.2s;
+    box-sizing: border-box;
+}
+
+.btn-auth-secondary:hover {
+    background: var(--bg-dark);
+    color: var(--bg-light);
+}
+
+#auth-page {
+    box-sizing: border-box;
+    padding: 40px 30% 80px 30%;
+    min-height: 75vh;
+}
+
+.auth-card-container {
+    max-width: 460px;
+    margin: 20px auto;
+    background: var(--bg-light);
+    border: 2px solid var(--bg-dark);
+    border-radius: 12px;
+    padding: 35px 30px;
+    box-shadow: 6px 6px 0px var(--bg-dark);
+    box-sizing: border-box;
+    text-align: center;
+}
+
+.auth-main-title {
+    font-family: var(--font-main-ru);
+    font-size: 30px;
+    color: var(--bg-dark);
+    margin: 0 0 30px 0;
+    letter-spacing: 1px;
+    padding: 0;
+}
+
+.auth-subtitle-text {
+    font-family: var(--font-main);
+    font-size: 14px;
+    color: #555555;
+    margin: 0 0 25px 0;
+    line-height: 1.5;
+}
+
+/* Кнопка Google */
+.btn-google-auth {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    background: var(--bg-light);
+    color: var(--bg-dark);
+    border: 2px solid var(--bg-dark);
+    border-radius: 6px;
+    padding: 12px;
+    font-family: var(--font-main);
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 3px 3px 0px var(--bg-dark);
+    transition: transform 0.1s ease, box-shadow 0.1s ease, background-color 0.15s ease;
+    box-sizing: border-box;
+}
+
+.btn-google-auth:hover {
+    background-color: var(--bg-light);
+    transform: translate(-1px, -1px);
+    box-shadow: 4px 4px 0px var(--bg-dark);
+}
+
+.btn-google-auth:active {
+    transform: translate(1px, 1px);
+    box-shadow: 1px 1px 0px var(--bg-dark);
+}
+
+/* Разделитель */
+.auth-divider-line {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    margin: 22px 0;
+    color: #645a5a;
+    font-family: var(--font-main);
+    font-size: 13px;
+}
+
+.auth-divider-line::before,
+.auth-divider-line::after {
+    content: '';
+    flex: 1;
+    border-bottom: 1px solid #CCCCCC;
+}
+
+.auth-divider-line span {
+    padding: 0 12px;
+    color: #666666;
+}
+
+/* Поля ввода */
+.auth-input-group {
+    text-align: left;
+    margin-bottom: 18px;
+}
+
+.auth-input-group label {
+    display: block;
+    font-family: var(--font-main);
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--bg-dark);
+    margin-bottom: 6px;
+    letter-spacing: 0.5px;
+}
+
+.auth-input-group input {
+    width: 100%;
+    padding: 12px 14px;
+    font-family: var(--font-main);
+    font-size: 15px;
+    border: 2px solid var(--bg-dark);
+    border-radius: 6px;
+    background: var(--bg-light);
+    color: var(--bg-dark);
+    outline: none;
+    box-sizing: border-box;
+    transition: border-color 0.2s, background-color 0.2s;
+}
+
+.auth-input-group input:focus {
+    background: var(--bg-light);
+    box-shadow: 0 0 0 2px rgba(46, 40, 40, 0.15);
+}
+
+/* Кнопка отправки */
+.btn-auth-submit {
+    width: 100%;
+    background: var(--bg-dark);
+    color: var(--bg-light);
+    border: 2px solid var(--bg-dark);
+    border-radius: 6px;
+    padding: 14px;
+    font-family: var(--font-accent);
+    font-size: 16px;
+    letter-spacing: 1px;
+    cursor: pointer;
+    margin-top: 6px;
+    box-shadow: 3px 3px 0px rgba(32, 32, 32, 0.25);
+    transition: background-color 0.2s, transform 0.1s;
+    box-sizing: border-box;
+}
+
+.btn-auth-submit:hover {
+    background: #423b3b;
+}
+
+.btn-auth-submit:active {
+    transform: translateY(1px);
+}
+
+.btn-auth-submit:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Футер формы и ссылки */
+/*====================
+ФУТЕР
+====================*/
+.site-footer {
+    background: var(--bg-dark);
+    color: var(--bg-light);
+    padding: 50px 8% 25px;
+    font-family: var(--font-main);
+    box-sizing: border-box;
+    margin-top: 60px;
+}
+
+.footer-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1.5fr 1fr 1fr;
+    gap: 40px;
+}
+
+.footer-logo {
+    font-family: var(--font-accent);
+    font-size: 24px;
+    margin: 0 0 12px 0;
+    letter-spacing: 1px;
+}
+
+.footer-desc {
+    font-size: 14px;
+    line-height: 1.6;
+    color: #A0A0A0;
+    margin: 0;
+}
+
+.footer-heading {
+    font-family: var(--font-accent);
+    font-size: 14px;
+    letter-spacing: 1px;
+    display: block;
+    margin-bottom: 14px;
+    color: var(--bg-light);
+}
+
+.footer-nav-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.footer-nav-list li {
+    margin-bottom: 10px;
+}
+
+.footer-nav-list a {
+    color: #A0A0A0;
+    text-decoration: none;
+    font-size: 14px;
+    transition: color 0.2s ease;
+    margin: 0;
+}
+
+.footer-nav-list a:hover {
+    color: var(--bg-light);
+}
+
+.footer-bottom-row {
+    max-width: 1200px;
+    margin: 40px auto 0;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.15);
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    font-size: 13px;
+    color: #808080;
+}
+
+.footer-bottom-row a {
+    color: inherit;
+    text-decoration: underline;
+    margin: 0;
+}
+
+.auth-link-secondary {
+    color: #666666;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.auth-link-secondary:hover {
+    color: var(--bg-dark);
+    text-decoration: underline;
+}
+
+.auth-switch-box {
+    color: #444444;
+}
+
+.auth-link-primary {
+    color: var(--bg-dark);
+    font-weight: 700;
+    text-decoration: underline;
+    margin-left: 6px;
+    cursor: pointer;
+}
+
+.auth-link-primary:hover {
+    color: #000000;
+}
 
 @media (max-width: 768px) {
+    #auth-page {
+        box-sizing: border-box;
+        padding: 40px 15% 80px 15%;
+        min-height: 75vh;
+    }
 
     .menu-toggle {
         display: flex;
@@ -521,9 +866,10 @@ PLUSES SECTION
 
     .navbar {
         display: flex;
-        flex-direction: row; 
-        justify-content: space-between;
+        flex-direction: row;
         align-items: center;
+        justify-content: space-between;
+        padding: 15px 20px;
         width: 100%;
         box-sizing: border-box;
     }
@@ -536,7 +882,6 @@ PLUSES SECTION
         height: 100vh;
         background: var(--bg-light);
         display: flex;
-        flex-direction: column;
         justify-content: center;
         align-items: center;
         gap: 30px;
@@ -558,9 +903,18 @@ PLUSES SECTION
         margin: 0;
     }
 
-    .navbar a, .login-link {
+    .navbar a {
         font-size: 28px; 
         margin-right: 0;
+    }
+    .login-link {
+        line-height: 1;
+        font-size: 18px;
+    }
+
+    .switcher-language {
+        font-size: 15px;
+        line-height: 1;
     }
 
     .session-setting-bar {
@@ -619,19 +973,6 @@ PLUSES SECTION
         padding: 15px;
         font-size: 18px;
     }
-
-    .navbar {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 10px;
-        padding: 15px;
-    }
-
-    .nav-links {
-        margin: 0 10px;
-    }
-
-
     
     .hero-section {
         height: auto !important;
@@ -650,12 +991,11 @@ PLUSES SECTION
     }
 
     .main-title {
-        font-size: 40px;
+        font-size: clamp(30px, 8vw, 60px);
         letter-spacing: 5px;
-        margin: 20px 0;
         text-align: center;
     }
-    .hero-text {
+    .hero-text, .hero-description {
         text-align: center;
         font-size: 20px;
     }
@@ -663,6 +1003,7 @@ PLUSES SECTION
         grid-template-columns: 1fr;
         gap: 30px;
         text-align: center;
+        font-size: 20px;
     }
 
     .about-content h2 {
@@ -691,5 +1032,14 @@ PLUSES SECTION
         font-size: 18px !important;
         padding: 2px !important;
         height: 28px !important;
+    }
+    .footer-container {
+        grid-template-columns: 1fr;
+        gap: 25px;
+        text-align: left;
+    }
+    .footer-bottom-row {
+        flex-direction: column;
+        align-items: flex-start;
     }
 }
